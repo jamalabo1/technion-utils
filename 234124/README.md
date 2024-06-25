@@ -11,3 +11,6 @@ _**that's it!**_
 
 go to the `actions` tab in ur github repo, and check the results of the runners.
 you can also check the binaries built by the runner, and test `.out` results
+
+### Note
+new features are planed to be published, keep an eye :).
