@@ -1,0 +1,25 @@
+{
+  "mtm_blockchain": {
+    "explict": [
+      {
+        "command": "hash",
+        "prefix": "hw1-tests/hash"
+      },
+      {
+        "command": "format",
+        "prefix": "hw1-tests/format"
+      },
+      {
+        "command": "compress",
+        "prefix": "hw1-tests/compress"
+      },
+      {
+        "key": "verify",
+        "command": "verify hw1-tests/verify.source hw1-tests/verify.target > hw1-tests/verify.out",
+        "include": false,
+        "out": "hw1-tests/verify.out",
+        "expected": "hw1-tests/verify.expected"
+      }
+    ]
+  }
+}

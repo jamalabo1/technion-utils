@@ -1,0 +1,66 @@
+name: Stage
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "staging" ]
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure CMake
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX:PATH=${{github.workspace}}/project
+
+      - name: Build
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+      - name: Install
+        run: cmake --install ${{github.workspace}}/build
+
+      - name: Store binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: binaries
+          path: |
+            ${{github.workspace}}/project
+  valgrind:
+    name: Valgrind
+    needs: build
+    runs-on: ubuntu-latest
+    container:
+      image: jamalabo1/general_images:valgrind
+    steps:
+      - name: Download binaries
+        uses: actions/download-artifact@v4
+        with:
+          name: binaries
+
+      - name: Valgrind Test
+        working-directory: bin
+        run: |
+          ls
+          python3 engine/main.py --valgrind
+  tests:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download binaries
+        uses: actions/download-artifact@v4
+        with:
+          name: binaries
+
+      - name: Run tests
+        working-directory: bin
+        run: |
+          python3 engine/main.py
+
+      - name: Archive Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: tests
+          path: ./bin/*test*/*.out
