@@ -16,6 +16,7 @@
       {
         "key": "verify",
         "command": "verify hw1-tests/verify.source hw1-tests/verify.target > hw1-tests/verify.out",
+        "prefix": "hw1-tests/verify",
         "include": false,
         "out": "hw1-tests/verify.out",
         "expected": "hw1-tests/verify.expected"

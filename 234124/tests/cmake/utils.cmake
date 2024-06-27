@@ -2,7 +2,6 @@
 # this implies that a library target staffing ${test_target_prefix}_tests exists.
 macro(create_testing_target test_target_prefix)
     enable_testing()
-    find_package(GTest REQUIRED)
     include(GoogleTest)
 
     set(target_to_test ${test_target_prefix})
@@ -33,7 +32,6 @@ endmacro()
 
 macro(create_global_testing_target global_test_target_name source_files)
     enable_testing()
-    find_package(GTest REQUIRED)
     include(GoogleTest)
 
 
