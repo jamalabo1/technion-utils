@@ -62,7 +62,7 @@ def run_tests(target: str, options):
         for op in options["explict"]:
             exec_command = gen_exec_command(target, op)
 
-            prefix = op['prefix']
+            prefix = op['prefix'] if "prefix" in op else ""
             out_dist = op["out"] if "out" in op else f"{prefix}.target.out"
             expected = op["expected"] if "expected" in op else f"{prefix}.target.expected"
 
