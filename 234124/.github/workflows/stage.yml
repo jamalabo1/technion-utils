@@ -29,12 +29,11 @@ jobs:
           name: binaries
           path: |
             ${{github.workspace}}/project
-  tests:
-    name: App tests
+
+  unit-tests:
+    name: Unit tests
     needs: build
     runs-on: ubuntu-latest
-    container:
-      image: jamalabo1/general_images:valgrind
     steps:
       - name: Download binaries
         uses: actions/download-artifact@v4
@@ -48,6 +47,18 @@ jobs:
           ./technion-234124_tests_exc
 
 
+  case-tests:
+    name: Case tests
+    needs: unit-tests
+    runs-on: ubuntu-latest
+    container:
+      image: jamalabo1/general_images:valgrind
+    steps:
+      - name: Download binaries
+        uses: actions/download-artifact@v4
+        with:
+          name: binaries
+
       - name: Case tests
         working-directory: bin
         run: |
@@ -59,10 +70,21 @@ jobs:
           name: tests
           path: ./bin/*test*/*.out
 
+
+  valgrind-tests:
+    name: Valgrind tests
+    needs: unit-tests
+    runs-on: ubuntu-latest
+    container:
+      image: jamalabo1/general_images:valgrind
+    steps:
+      - name: Download binaries
+        uses: actions/download-artifact@v4
+        with:
+          name: binaries
+
       - name: Valgrind Test
         working-directory: bin
         run: |
           ls
           python3 engine/main.py --valgrind
-          
-

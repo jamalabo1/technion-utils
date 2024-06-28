@@ -3,8 +3,8 @@ import subprocess
 import os
 
 
-def run_command(command: str):
-    subprocess.run(command, shell=True)
+def run_command(command: str, working_dir=None):
+    subprocess.run(command, cwd=working_dir, shell=True)
 
 
 def load_settings():
@@ -14,3 +14,7 @@ def load_settings():
 
 def change_permission(file):
     os.chmod(file, 0o755)
+
+
+def op_key(obj, key, default_val):
+    return obj[key] if key in obj else default_val

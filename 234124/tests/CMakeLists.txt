@@ -8,7 +8,7 @@ include(cmake/FindGTest.cmake)
 
 create_global_testing_target(technion-234124_tests main.cpp) # create a global target for sub-tests to link their test library to
 
-add_subdirectory(hw1-unit-tests)
+add_subdirectory(hw1/unit-tests)
 
 enable_global_testing_target() # enable this target by linking the global target to an executable (order is important, for the global test target to populate it's self)
 
@@ -41,6 +41,11 @@ install(FILES
 )
 install(
         DIRECTORY
-        hw1-tests
+        hw1/tests
+        DESTINATION bin
+)
+install(
+        DIRECTORY
+        hw1/generators/out
         DESTINATION bin
 )
