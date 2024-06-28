@@ -3,23 +3,44 @@
     "explict": [
       {
         "command": "hash",
-        "prefix": "hw1-tests/hash"
+        "prefix": "hw1/tests/hash"
       },
       {
         "command": "format",
-        "prefix": "hw1-tests/format"
+        "prefix": "hw1/tests/format"
       },
       {
         "command": "compress",
-        "prefix": "hw1-tests/compress"
+        "prefix": "hw1/tests/compress"
       },
       {
         "key": "verify",
-        "command": "verify hw1-tests/verify.source hw1-tests/verify.target > hw1-tests/verify.out",
-        "prefix": "hw1-tests/verify",
+        "command": "verify hw1/tests/verify.source hw1/tests/verify.target > hw1/tests/verify.out",
+        "prefix": "hw1/tests/verify",
         "include": false,
-        "out": "hw1-tests/verify.out",
-        "expected": "hw1-tests/verify.expected"
+        "out": "hw1/tests/verify.out",
+        "expected": "hw1/tests/verify.expected"
+      }
+    ],
+    "generated": [
+      {
+        "command": "hash {source} {out}",
+        "path": "hw1/generators/out/hash",
+        "path_vars": {
+          "source": "hash.source",
+          "out": "hash.out",
+          "expected": "hash.expected"
+        }
+      },
+      {
+        "command": "verify {source} {target} > {out}",
+        "path": "hw1/generators/out/verify",
+        "path_vars": {
+          "source": "verify.source",
+          "target": "verify.target",
+          "out": "verify.out",
+          "expected": "verify.expected"
+        }
       }
     ]
   }
