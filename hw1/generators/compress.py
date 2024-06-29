@@ -1,11 +1,11 @@
 import random
 
 from common import generate_blockchain
-from utils import TemplatedData, save_test_case
+from utils import TemplatedData, Data, save_test_case
 
 
 def compress_blockchain(blockchain):
-    compressed_blockchain = []
+    expected_output = []
     i = 0
     n = len(blockchain)
 
@@ -22,16 +22,17 @@ def compress_blockchain(blockchain):
             last_timestamp = blockchain[i + 1]['timestamp']
             i += 1
 
-        compressed_block = {
-            'sender': sender,
-            'recipient': recipient,
-            'coins': total_coins,
-            'timestamp': last_timestamp
-        }
-        compressed_blockchain.append(compressed_block)
+        expected_output.extend([
+            f"{i + 1}",
+            f"Sender Name: {sender}",
+            f"Receiver Name: {recipient}",
+            f"Transaction Value: {total_coins}",
+            f"Transaction timestamp: {last_timestamp}"
+        ])
+
         i += 1
 
-    return compressed_blockchain
+    return expected_output
 
 
 def generate_test_case():
@@ -55,9 +56,8 @@ def main():
                     "{sender} {recipient} {coins} {timestamp}",
                     blockchain
                 ),
-                TemplatedData(
+                Data(
                     "expected",
-                    "{sender} {recipient} {coins} {timestamp}",
                     expected_output
                 )
             ])
