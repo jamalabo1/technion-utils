@@ -10,15 +10,15 @@ def generate_test_case():
     blockchain = generate_blockchain(num_blocks)
 
     # Create expected output as a list of strings
-    expected_output = ["Blockchain Info:"]
-    for i, block in enumerate(reversed(blockchain)):
+    expected_output = ["BlockChain Info:"]
+    for i, block in enumerate(blockchain):
         sender = block['sender']
         receiver = block['recipient']
         value = block['coins']
         timestamp = block['timestamp']
 
         expected_output.extend([
-            f"{i + 1}",
+            f"{i + 1}.",
             f"Sender Name: {sender}",
             f"Receiver Name: {receiver}",
             f"Transaction Value: {value}",
