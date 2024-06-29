@@ -30,7 +30,7 @@ def generate_test_case():
             hashed = hash(block["coins"] + fc, block["sender"] + fs, block["recipient"] + fr)
         target_output.append(hashed)
     vtype = "passed" if fail == 0 else "failed"
-    expected_output = f"Verification {vtype}"
+    expected_output = f"Verification {vtype}\n"
 
     return blockchain, target_output, [expected_output]
 

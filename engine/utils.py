@@ -4,7 +4,7 @@ import os
 
 
 def run_command(command: str, working_dir=None):
-    subprocess.run(command, cwd=working_dir, shell=True)
+    return subprocess.run(command, cwd=working_dir, shell=True)
 
 
 def load_settings():
