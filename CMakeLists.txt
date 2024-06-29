@@ -16,18 +16,16 @@ install_project_binaries(technion-234124_tests_exc)
 
 
 # python testing
-add_custom_command(
-        TARGET technion-234124_tests POST_BUILD
-        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
-        COMMAND pip install pytest --target ${PROJECT_BINARY_DIR} --upgrade
-        COMMENT "installing required modules"
-)
+#add_custom_command(
+#        TARGET technion-234124_tests POST_BUILD
+#        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+#        COMMAND pip install pytest --target ${PROJECT_BINARY_DIR} --upgrade
+#        COMMENT "installing required modules"
+#)
 
 install(
         DIRECTORY
         engine
-        hw1/tests
-        hw1/generators/out
         DESTINATION bin
 )
 
@@ -41,6 +39,10 @@ install(FILES
         settings.json
         conftest.py
         DESTINATION bin
+)
+install(FILES
+            requirements.txt
+        DESTINATION .
 )
 #install(
 #        DIRECTORY
