@@ -40,6 +40,7 @@ def generate_test_case():
     num_blocks = random.randint(1, 1000)
 
     blockchain = generate_blockchain(num_blocks)
+    blockchain = sorted(blockchain, key=lambda x: x["timestamp"], reverse=True)
     expected_output = compress_blockchain(blockchain)
 
     return blockchain, expected_output
