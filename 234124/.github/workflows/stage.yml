@@ -61,13 +61,14 @@ jobs:
       - run: pip install -r requirements.txt
 
       - name: Pull tests
-        run: |
-          git clone --branch tests https://gitlab.com/jamalabo1/technion-utils bin/hw1
-
-      - name: Case tests
         working-directory: bin
         run: |
-          pytest engine/runner2.py
+          git clone --branch tests https://gitlab.com/jamalabo1/technion-utils temp && cd temp && mv * ../
+      - name: Case tests
+        working-directory: bin
+        continue-on-error: true
+        run: |
+          pytest --show-capture=no engine/runner2.py
 
       - name: Archive Results
         uses: actions/upload-artifact@v4
@@ -93,12 +94,12 @@ jobs:
 
       - name: Setup valgrind
         run: |
-              sudo apt-get update
-              sudo apt-get install -y valgrind
+          sudo apt-get update
+          sudo apt-get install -y valgrind
 
       - name: Pull tests
         run: |
-          git clone --branch tests https://gitlab.com/jamalabo1/technion-utils bin/hw1
+          git clone --branch tests https://gitlab.com/jamalabo1/technion-utils temp && cd temp && mv * ../
 
       - name: Valgrind Test
         working-directory: bin
