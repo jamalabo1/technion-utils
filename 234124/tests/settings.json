@@ -33,6 +33,24 @@
         }
       },
       {
+        "command": "compress {source} {out}",
+        "path": "hw1/generators/out/compress",
+        "path_vars": {
+          "source": "compress.source",
+          "out": "compress.out",
+          "expected": "compress.expected"
+        }
+      },
+      {
+        "command": "format {source} {out}",
+        "path": "hw1/generators/out/format",
+        "path_vars": {
+          "source": "format.source",
+          "out": "format.out",
+          "expected": "format.expected"
+        }
+      },
+      {
         "command": "verify {source} {target} > {out}",
         "path": "hw1/generators/out/verify",
         "path_vars": {
