@@ -70,7 +70,7 @@ jobs:
       - name: Case tests
         working-directory: bin
         run: |
-          pytest engine/runner2.py --capture=no
+          pytest engine/runner2.py
 
       - name: Archive Results
         uses: actions/upload-artifact@v4
