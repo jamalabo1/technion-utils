@@ -20,7 +20,7 @@ def compress_blockchain(blockchain):
         # Look ahead to compress consecutive blocks with same sender and recipient
         while i + 1 < n and blockchain[i + 1]['sender'] == sender and blockchain[i + 1]['recipient'] == recipient:
             total_coins += blockchain[i + 1]['coins']
-            last_timestamp = blockchain[i + 1]['timestamp']
+            # last_timestamp = blockchain[i + 1]['timestamp']
             i += 1
         real_index += 1
         expected_output.extend([
