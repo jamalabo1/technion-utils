@@ -1,0 +1,6 @@
+
+
+generate_tests:
+    stage: generate
+    script:
+        - python3 tests/hw1/generators/compress.py
