@@ -5,7 +5,7 @@ from utils import TemplatedData, Data, save_test_case
 
 
 def compress_blockchain(blockchain):
-    expected_output = []
+    expected_output = ["Blockchain Info:"]
     i = 0
     n = len(blockchain)
 
@@ -23,7 +23,7 @@ def compress_blockchain(blockchain):
             i += 1
 
         expected_output.extend([
-            f"{i + 1}",
+            f"{i + 1}.",
             f"Sender Name: {sender}",
             f"Receiver Name: {recipient}",
             f"Transaction Value: {total_coins}",

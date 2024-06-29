@@ -18,7 +18,7 @@ def generate_test_case():
         timestamp = block['timestamp']
 
         expected_output.extend([
-            f"{i + 1}",
+            f"{i + 1}.",
             f"Sender Name: {sender}",
             f"Receiver Name: {receiver}",
             f"Transaction Value: {value}",
