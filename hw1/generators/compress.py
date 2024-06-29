@@ -41,7 +41,7 @@ def generate_test_case():
     blockchain = generate_blockchain(num_blocks)
     expected_output = compress_blockchain(blockchain)
 
-    return reversed(blockchain), reversed(expected_output)
+    return blockchain, expected_output
 
 
 def main():
