@@ -36,7 +36,7 @@ def generate_test_case():
 
 
 def main():
-    for n in range(1, 1000):
+    for n in range(1, 10000):
         blockchain, target_output, expected_output = generate_test_case()
         save_test_case(
             key="verify",

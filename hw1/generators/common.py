@@ -4,8 +4,8 @@ from typing import List
 
 def generate_blockchain(num_blocks) -> List[dict]:
     blockchain = []
-    senders = ['A', 'B', 'C', 'D']
-    recipients = ['X', 'Y', 'W', 'Z']
+    senders = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
+    recipients = ['T', 'U', 'V', 'X', 'Y', 'W', 'Z']
 
     for i in range(num_blocks):
         block = {
