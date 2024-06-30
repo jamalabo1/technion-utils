@@ -28,7 +28,7 @@ publish_results:
     - git config user.name "ci-bot"
     - git remote add gitlab_origin https://$RUNNER_USERNAME:$ACCESS_TOKEN@gitlab.com/jamalabo1/technion-utils.git
     - BRANCH_ID="tests-$(cat /proc/sys/kernel/random/uuid)"
-    - git checkout $BRANCH_ID
+    - git checkout --orphan $BRANCH_ID
     - git add .
     - git commit -m "push back from pipeline"
     - git checkout $BRANCH_ID
