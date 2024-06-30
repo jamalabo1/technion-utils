@@ -30,7 +30,7 @@ def pytest_generate_tests(metafunc):
                     path_vars = op["path_vars"]
                     variables = {key: test_case.joinpath(path_vars[key]) for key in path_vars}
 
-                    gen_commands = common.get_generated_test_commands(target, op, variables, valgrind)
+                    gen_commands = common.get_generated_test_commands(target, test_case, op, variables, valgrind)
                     commands = [
                         shell_command_runner(gen_commands["exec_command"])
                     ]

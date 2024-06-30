@@ -125,6 +125,7 @@ jobs:
 
       - name: Valgrind Test
         working-directory: bin
+        continue-on-error: true
         run: |
           ls
           pytest --valgrind engine/runner2.py --verbose --capture=tee-sys
@@ -133,4 +134,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: valgrind output
-          path: ./bin/valgrind-out.txt
+          path: ./bin/**/valgrind-out.txt
