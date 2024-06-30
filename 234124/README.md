@@ -3,24 +3,32 @@
 offers a GitHub action with workflow to build and test the first assignment.
 
 ## Usage 
-1. add the supplied files to ur repository, such that `.github` & `tests` is at the root level
+1. add the supplied files to ur repository, such that `.github` & `cmake` & `tests` is at the root level
 2. create a cmake executable target `mtm_blockchain`
 3. _optional_: for unit tests create a cmake library target `mtm_blockchain_lib`
+4. go to `GitHub Actions` section and `Test Runner` then Click on `Run Workflow` and choose your options accordingly.
 
 
-#### Exmaple:
+#### Example:
 CMakeLists.txt:
 ```
-...
+cmake_minimum_required(VERSION 3.16)
+project(HW1)
+
+set(CMAKE_CXX_STANDARD 17)
 
 include(cmake/utils)
 
 add_library(mtm_blockchain_lib
-        Blockchain.cpp
-        ...
+        Utilities.cpp
+        BlockChain.cpp
+        Transaction.cpp
+
+        BlockChain.h
+        Transaction.h
+        Utilities.h
 )
 
-# headers for unit tests
 target_include_directories(
         mtm_blockchain_lib
         PUBLIC
@@ -34,6 +42,7 @@ add_executable(
 )
 
 target_link_libraries(mtm_blockchain mtm_blockchain_lib)
+
 
 install_project_binaries(mtm_blockchain)
 ```
