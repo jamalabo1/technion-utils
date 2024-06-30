@@ -1,11 +1,22 @@
-name: Stage
+name: Test Runner
 on:
   workflow_dispatch:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "develop", "staging" ]
+    inputs:
+      run-unit-tests:
+        name: Run unit tests
+        type: boolean
+        default: false
+      run-valgrind:
+        name: Run tests with valgrind
+        type: boolean
+        default: false
+      tests-branch:
+        name: Tests branch name
+        type: string
+        default: "tests-2d2a404c-0ee6-4148-aff4-97fffabce9aa"
+
 env:
+  #  TESTS_ID: ""
   BUILD_TYPE: Release
 
 jobs:
@@ -15,13 +26,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Configure CMake
-        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX:PATH=${{github.workspace}}/project
+        run: |
+          cmake -B ${{github.workspace}}/build -D CMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}  -D CMAKE_INSTALL_PREFIX:PATH="${{github.workspace}}/project" -D ENABLE_UNIT_TESTS="${{ github.event.inputs.run-unit-tests }}"
 
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
       - name: Install
-        run: cmake --install ${{github.workspace}}/build
+        run: cmake --install ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
       - name: Store binaries
         uses: actions/upload-artifact@v4
@@ -31,6 +43,7 @@ jobs:
             ${{github.workspace}}/project
 
   unit-tests:
+    if: ${{github.event.inputs.run-unit-tests=='true'}}
     name: Unit tests
     needs: build
     runs-on: ubuntu-latest
@@ -54,16 +67,20 @@ jobs:
         with:
           name: binaries
 
+      - name: Pull tests requirements
+        working-directory: bin
+        run: |
+          git clone https://gitlab.com/jamalabo1/technion-utils --single-branch --depth 1 --branch \
+          ${{ github.event.inputs.tests-branch }} temp
+          cd temp && mv * ../ && rm -rf temp
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
-      - run: pip install -r requirements.txt
+      - run: pip install -r bin/requirements.txt
 
-      - name: Pull tests
-        working-directory: bin
-        run: |
-          git clone --branch tests https://gitlab.com/jamalabo1/technion-utils temp && cd temp && mv * ../
+
       - name: Case tests
         working-directory: bin
         continue-on-error: true
@@ -73,10 +90,11 @@ jobs:
       - name: Archive Results
         uses: actions/upload-artifact@v4
         with:
-          name: tests
+          name: tests outputs
           path: ./bin/**/*.out
 
   valgrind-tests:
+    if: ${{github.event.inputs.run-valgrind=='true'}}
     name: Valgrind tests
     needs: build
     runs-on: ubuntu-latest
@@ -86,24 +104,33 @@ jobs:
         with:
           name: binaries
 
+      - name: Pull tests requirements
+        working-directory: bin
+        run: |
+          git clone https://gitlab.com/jamalabo1/technion-utils --single-branch --depth 1 --branch \
+          ${{ github.event.inputs.tests-branch }} temp
+          cd temp && mv * ../ && rm -rf temp
+
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
-      - run: pip install -r requirements.txt
+      - run: pip install -r bin/requirements.txt
 
       - name: Setup valgrind
         run: |
           sudo apt-get update
           sudo apt-get install -y valgrind
 
-      - name: Pull tests
-        working-directory: bin
-        run: |
-          git clone --branch tests https://gitlab.com/jamalabo1/technion-utils temp && cd temp && mv * ../
-
       - name: Valgrind Test
         working-directory: bin
         run: |
           ls
           pytest --valgrind engine/runner2.py --verbose --capture=tee-sys
+
+      - name: Archive Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: valgrind output
+          path: ./bin/valgrind-out.txt

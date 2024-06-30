@@ -4,7 +4,9 @@ def get_generated_test_commands(target: str, options, variables, valgrind: bool 
     verify_command = f"diff --strip-trailing-cr -B -Z {variables['expected']} {variables['out']}"
 
     if valgrind:
-        exec_command = f"valgrind {exec_command}"
+        exec_command = (f"valgrind --leak-check=full --show-leak-kinds=all"
+                        f" --track-origins=yes --verbose"
+                        f" --log-file=valgrind-out.txt {exec_command}")
         verify_command = ""
 
     return {
