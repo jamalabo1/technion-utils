@@ -25,7 +25,7 @@ def pytest_generate_tests(metafunc):
 
         options = settings[target]
         for type in options:
-            for op in options["generated"]:
+            for op in options[type]:
                 for test_case in Path(op["path"]).glob("*"):
                     path_vars = op["path_vars"]
                     variables = {key: test_case.joinpath(path_vars[key]) for key in path_vars}
