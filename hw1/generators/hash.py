@@ -1,4 +1,4 @@
-from common import generate_blockchain, hash
+from common import generate_blockchain, hash, TESTS_SIZE
 from utils import save_test_case, Data, TemplatedData
 
 import random
@@ -18,7 +18,7 @@ def generate_test_case():
 
 
 def main():
-    for n in range(1, 10000):
+    for n in range(1, TESTS_SIZE + 1):
         blockchain, expected_output = generate_test_case()
         save_test_case(
             key="hash",

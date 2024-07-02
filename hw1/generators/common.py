@@ -2,6 +2,8 @@ import random
 from typing import List
 
 
+TESTS_SIZE = 1000
+
 def generate_blockchain(num_blocks) -> List[dict]:
     blockchain = []
     senders = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
