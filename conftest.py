@@ -24,7 +24,7 @@ def pytest_generate_tests(metafunc):
         utils.change_permission(target)
 
         options = settings[target]
-        if "generated" in options:
+        for type in options:
             for op in options["generated"]:
                 for test_case in Path(op["path"]).glob("*"):
                     path_vars = op["path_vars"]
@@ -48,7 +48,7 @@ def pytest_generate_tests(metafunc):
                         (target, runner_case)
                     )
                     idslist.append(
-                        f"{target}-{test_case}"
+                        f"{target}-{type}-{test_case}"
                     )
 
     metafunc.parametrize("target,test_case", test_target_data, ids=idslist)
