@@ -3,8 +3,6 @@ project(HW1)
 
 set(CMAKE_CXX_STANDARD 17)
 
-include(cmake/utils)
-
 add_library(mtm_blockchain_lib
         Utilities.cpp
         BlockChain.cpp
@@ -30,4 +28,4 @@ add_executable(
 target_link_libraries(mtm_blockchain mtm_blockchain_lib)
 
 
-install_project_binaries(mtm_blockchain)
+install(TARGETS mtm_blockchain DESTINATION bin COMPONENT mtm_blockchain)
