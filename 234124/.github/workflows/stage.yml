@@ -2,21 +2,21 @@ name: Test Runner
 on:
   workflow_dispatch:
     inputs:
-      run-unit-tests:
-        name: Run unit tests
+      run-valgrind:
+        description: Run tests with valgrind
         type: boolean
         default: false
-      run-valgrind:
-        name: Run tests with valgrind
+      run-unit-tests:
+        description: Run unit tests (Advanced, requires configurations)
         type: boolean
         default: false
       tests-branch:
-        name: Tests branch name
+        description: Tests branch name
         type: string
+        required: true
         default: "tests-2d2a404c-0ee6-4148-aff4-97fffabce9aa"
 
 env:
-  #  TESTS_ID: ""
   BUILD_TYPE: Release
 
 jobs:
@@ -41,22 +41,7 @@ jobs:
           name: binaries
           path: |
             ${{github.workspace}}/project
-
-  unit-tests:
-    if: ${{github.event.inputs.run-unit-tests=='true'}}
-    name: Unit tests
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download binaries
-        uses: actions/download-artifact@v4
-        with:
-          name: binaries
-      - name: Unit Tests
-        working-directory: bin
-        run: |
-          chmod 755 ./technion-234124_tests_exc
-          ./technion-234124_tests_exc
+          retention-days: 30
   case-tests:
     name: Case tests
     needs: build
@@ -80,18 +65,18 @@ jobs:
           cache: 'pip' # caching pip dependencies
       - run: pip install -r bin/requirements.txt
 
-
       - name: Case tests
         working-directory: bin
-        continue-on-error: true
         run: |
           pytest --show-capture=no engine/runner2.py
 
       - name: Archive Results
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: tests outputs
           path: ./bin/**/*.out
+        retention-days: 30
 
   valgrind-tests:
     if: ${{github.event.inputs.run-valgrind=='true'}}
@@ -125,13 +110,29 @@ jobs:
 
       - name: Valgrind Test
         working-directory: bin
-        continue-on-error: true
         run: |
           ls
           pytest --valgrind engine/runner2.py --verbose --capture=tee-sys --maxfail=10
 
       - name: Archive Results
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: valgrind output
           path: ./bin/**/valgrind-out.txt
+        retention-days: 30
+  unit-tests:
+    if: ${{github.event.inputs.run-unit-tests=='true'}}
+    name: Unit tests
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download binaries
+        uses: actions/download-artifact@v4
+        with:
+          name: binaries
+      - name: Unit Tests
+        working-directory: bin
+        run: |
+          chmod 755 ./technion-234124_tests_exc
+          ./technion-234124_tests_exc
