@@ -2,6 +2,11 @@ name: Test Runner
 on:
   workflow_dispatch:
     inputs:
+      tests-branch:
+        description: Tests branch name
+        type: string
+        required: true
+        default: "hw1/tests/fa5c9579-eb4c-43be-8043-8180554ec0ff"
       run-valgrind:
         description: Run tests with valgrind
         type: boolean
@@ -10,12 +15,16 @@ on:
         description: Run unit tests (Advanced, requires configurations)
         type: boolean
         default: false
-      tests-branch:
-        description: Tests branch name
-        type: string
+      case-max-fail:
+        description: Case tests max failure (Advanced)
+        type: number
         required: true
-        default: "tests-2d2a404c-0ee6-4148-aff4-97fffabce9aa"
-
+        default: 0
+      valgrind-max-fail:
+        description: Valgrind tests max failure (Advanced)
+        type: number
+        required: true
+        default: 10
 env:
   BUILD_TYPE: Release
 
@@ -41,7 +50,6 @@ jobs:
           name: binaries
           path: |
             ${{github.workspace}}/project
-          retention-days: 30
   case-tests:
     name: Case tests
     needs: build
@@ -68,7 +76,7 @@ jobs:
       - name: Case tests
         working-directory: bin
         run: |
-          pytest --show-capture=no engine/runner2.py
+          pytest --show-capture=no engine/runner2.py --maxfail=${{github.event.inputs.case-max-fail}}
 
       - name: Archive Results
         if: always()
@@ -76,7 +84,6 @@ jobs:
         with:
           name: tests outputs
           path: ./bin/**/*.out
-        retention-days: 30
 
   valgrind-tests:
     if: ${{github.event.inputs.run-valgrind=='true'}}
@@ -112,7 +119,7 @@ jobs:
         working-directory: bin
         run: |
           ls
-          pytest --valgrind engine/runner2.py --verbose --capture=tee-sys --maxfail=10
+          pytest --valgrind engine/runner2.py --verbose --capture=tee-sys --maxfail=${{github.event.inputs.valgrind-max-fail}}
 
       - name: Archive Results
         if: always()
@@ -120,7 +127,6 @@ jobs:
         with:
           name: valgrind output
           path: ./bin/**/valgrind-out.txt
-        retention-days: 30
   unit-tests:
     if: ${{github.event.inputs.run-unit-tests=='true'}}
     name: Unit tests
