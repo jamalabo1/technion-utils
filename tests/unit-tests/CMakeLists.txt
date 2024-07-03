@@ -10,11 +10,12 @@ if (ENABLE_UNIT_TESTS)
 
     add_subdirectory(project)
 
-    message("Unit tests enabled")
 
+    message(STATUS "Unit tests enabled")
     set(TESTING_TARGET_LIBRARY mtm_blockchain_lib)
 
     set(GLOBAL_TESTING_TARGET tests)
+    message(STATUS "GLOBAL TARGET: ${GLOBAL_TESTING_TARGET}, TESTING_TARGET_LIBRARY: ${TESTING_TARGET_LIBRARY}")
 
     create_global_testing_target(${GLOBAL_TESTING_TARGET} main.cpp) # create a global target for sub-tests to link their test library to
 
@@ -26,7 +27,8 @@ if (ENABLE_UNIT_TESTS)
     create_testing_target(${TESTING_TARGET_LIBRARY})
     #end mtm_blockchain_lib
 
-    enable_global_testing_target() # enable this target by linking the global target to an executable (order is important, for the global test target to populate it's self)
+    create_testing_executable(${GLOBAL_TESTING_TARGET} ${GLOBAL_TESTING_TARGET}_exc)
+#    enable_global_testing_target() # enable this target by linking the global target to an executable (order is important, for the global test target to populate it's self)
 
     install(TARGETS ${GLOBAL_TESTING_TARGET}_exec DESTINATION bin COMPONENT ${GLOBAL_TESTING_TARGET}_exec)
 endif ()

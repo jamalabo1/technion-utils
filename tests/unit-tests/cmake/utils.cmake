@@ -14,6 +14,7 @@ macro(create_testing_target test_target_prefix)
     #    target_link_libraries (${test_target} PUBLIC $<TARGET_PROPERTY:${target_to_test},LINK_LIBRARIES> )
     target_include_directories(${test_target} PUBLIC $<TARGET_PROPERTY:${target_to_test},private_include_directories>)
 
+    message(STATUS "Linking global target: ${global_test_target} with test target: ${test_target}")
     target_link_libraries(${global_test_target} PRIVATE $<TARGET_OBJECTS:${test_target}> ${test_target})
 
     create_testing_executable(${test_target} ${test_target_exc})
