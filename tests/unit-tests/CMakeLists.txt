@@ -30,5 +30,5 @@ if (ENABLE_UNIT_TESTS)
     create_testing_executable(${GLOBAL_TESTING_TARGET} ${GLOBAL_TESTING_TARGET}_exc)
 #    enable_global_testing_target() # enable this target by linking the global target to an executable (order is important, for the global test target to populate it's self)
 
-    install(TARGETS ${GLOBAL_TESTING_TARGET}_exec DESTINATION bin COMPONENT ${GLOBAL_TESTING_TARGET}_exec)
+    install(TARGETS ${GLOBAL_TESTING_TARGET}_exc DESTINATION bin COMPONENT ${GLOBAL_TESTING_TARGET}_exc)
 endif ()
