@@ -3,7 +3,7 @@
     "predefined": [
       {
         "command": "hash {source} {out}",
-        "path": "hw1/predefined/hash",
+        "path": "tests/predefined/hash",
         "path_vars": {
           "source": "hash.source",
           "out": "hash.out",
@@ -12,7 +12,7 @@
       },
       {
         "command": "compress {source} {out}",
-        "path": "hw1/predefined/compress",
+        "path": "tests/predefined/compress",
         "path_vars": {
           "source": "compress.source",
           "out": "compress.out",
@@ -21,7 +21,7 @@
       },
       {
         "command": "format {source} {out}",
-        "path": "hw1/predefined/format",
+        "path": "tests/predefined/format",
         "path_vars": {
           "source": "format.source",
           "out": "format.out",
@@ -30,7 +30,7 @@
       },
       {
         "command": "verify {source} {target} > {out}",
-        "path": "hw1/predefined/verify",
+        "path": "tests/predefined/verify",
         "path_vars": {
           "source": "verify.source",
           "target": "verify.target",
@@ -42,7 +42,7 @@
     "generated": [
       {
         "command": "hash {source} {out}",
-        "path": "hw1/generators/out/hash",
+        "path": "tests/generators/out/hash",
         "path_vars": {
           "source": "hash.source",
           "out": "hash.out",
@@ -51,7 +51,7 @@
       },
       {
         "command": "compress {source} {out}",
-        "path": "hw1/generators/out/compress",
+        "path": "tests/generators/out/compress",
         "path_vars": {
           "source": "compress.source",
           "out": "compress.out",
@@ -60,7 +60,7 @@
       },
       {
         "command": "format {source} {out}",
-        "path": "hw1/generators/out/format",
+        "path": "tests/generators/out/format",
         "path_vars": {
           "source": "format.source",
           "out": "format.out",
@@ -69,7 +69,7 @@
       },
       {
         "command": "verify {source} {target} > {out}",
-        "path": "hw1/generators/out/verify",
+        "path": "tests/generators/out/verify",
         "path_vars": {
           "source": "verify.source",
           "target": "verify.target",

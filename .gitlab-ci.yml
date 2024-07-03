@@ -6,7 +6,7 @@ stages:
 
 workflow:
   rules:
-    - if: $CI_COMMIT_BRANCH == "234124-tests-generator"
+    - if: $CI_COMMIT_BRANCH == "234124/hw1/tests-generator"
 
 generate_tests:
   stage: generate
@@ -27,7 +27,7 @@ publish_results:
     - git config user.email $RUNNER_EMAIL
     - git config user.name "ci-bot"
     - git remote add gitlab_origin https://$RUNNER_USERNAME:$ACCESS_TOKEN@gitlab.com/jamalabo1/technion-utils.git
-    - BRANCH_ID="hw1/tests/$(cat /proc/sys/kernel/random/uuid)"
+    - BRANCH_ID="234124/hw1/tests/$(cat /proc/sys/kernel/random/uuid)"
     - git checkout --orphan $BRANCH_ID
     - git add .
     - git commit -m "push back from pipeline"
