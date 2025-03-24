@@ -1,0 +1,32 @@
+\ProvidesPackage{symbols}[Custom symbols helpers]
+
+\RequirePackage{amsmath, graphicx}
+\RequirePackage{xcolor}
+
+% Declare options
+\DeclareOption{mathsets} {
+    \newcommand{\R}{\mathbb{R}}  
+    \newcommand{\Z}{\mathbb{Z}}
+    \newcommand{\N}{\mathbb{N}}
+    \newcommand{\Q}{\mathbb{Q}}
+    \newcommand{\Rp}{\mathbb{R^+}}
+}
+\DeclareOption{functions}{
+    \newcommand{\fn}[3][f]{#1\colon#2\to#3}
+}
+\DeclareOption{limits}{
+    \newcommand{\toinf}[1]{#1\to\infty}
+}
+\DeclareOption{powers}{
+    \newcommand{\powW}[2]{#1^{\!^{#2}}}
+    \newcommand{\pow}[2]{(#1)^{\!^{#2}}}
+}
+\DeclareOption{rounding}{
+    \newcommand{\ceil}[1]{\lceil #1 \rceil}
+    \newcommand{\floor}[1]{\lfloor #1 \rfloor}
+}
+
+% Process selected options
+\ProcessOptions\relax
+
+\endinput
