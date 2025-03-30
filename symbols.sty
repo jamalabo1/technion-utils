@@ -4,15 +4,19 @@
 \RequirePackage{xcolor}
 
 % Declare options
-\DeclareOption{mathsets} {
-    \newcommand{\R}{\mathbb{R}}  
+\newcommand{\R}{\mathbb{R}}  
     \newcommand{\Z}{\mathbb{Z}}
     \newcommand{\N}{\mathbb{N}}
     \newcommand{\Q}{\mathbb{Q}}
     \newcommand{\Rp}{\mathbb{R^+}}
+    \newcommand{\fn}[3][f]{#1\colon#2\to#3}
+    \newcommand{\ceil}[1]{\lceil #1 \rceil}
+    \newcommand{\floor}[1]{\lfloor #1 \rfloor}
+
+\DeclareOption{mathsets} {
+     
 }
 \DeclareOption{functions}{
-    \newcommand{\fn}[3][f]{#1\colon#2\to#3}
 }
 \DeclareOption{limits}{
     \newcommand{\toinf}[1]{#1\to\infty}
