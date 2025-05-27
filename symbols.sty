@@ -1,5 +1,17 @@
 \ProvidesPackage{helpers/symbols}[Custom symbols helpers]
 
+
+
+\usepackage{fontspec}
+\usepackage{polyglossia}
+% Load font from relative path
+\newfontfamily\hebrewfont[
+  Path = ../fonts/static/,
+  UprightFont = *-Regular.ttf,
+  BoldFont = *-Bold.ttf
+]{NotoSansHebrew}
+
+
 \usepackage{amsmath,amsthm,amssymb,hyperref}
 \RequirePackage{xcolor}
 
@@ -12,6 +24,8 @@
     \newcommand{\fn}[3][f]{#1\colon#2\to#3}
     \newcommand{\ceil}[1]{\lceil #1 \rceil}
     \newcommand{\floor}[1]{\lfloor #1 \rfloor}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\I}{\mathbb{I}}
 
 \DeclareOption{mathsets} {
      
