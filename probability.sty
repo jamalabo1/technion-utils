@@ -1,0 +1,19 @@
+\ProvidesPackage{helpers/probability}[Custom probability consepts]
+
+
+\NewDocumentCommand{\pdf}{O{f}}{
+    #1_X
+}
+
+\newcommand{\tint}{\int_{-\infty}^{\infty}}
+\newcommand{\txint}[1]{\int_{-\infty}^{\infty}#1dx}
+
+% cdf integral, (range (a,b), functions, variable)
+\NewDocumentCommand{\cdfi}{O{\infty} O{-\infty} O{f} O{t}}{
+  \tint \pdf[#3](#4) \, d#4
+}
+
+
+\renewcommand{\P}{\mathbb{P}}
+\newcommand{\Pc}[2]{\P(#1|#2)\P(#2)}
+\newcommand{\E}{\mathbb{E}}

@@ -1,5 +1,5 @@
 \ProvidesPackage{helpers/symbols}[Custom symbols helpers]
-
+\usepackage{xparse}
 
 
 \usepackage{fontspec}
@@ -17,15 +17,44 @@
 
 % Declare options
 \newcommand{\R}{\mathbb{R}}  
-    \newcommand{\Z}{\mathbb{Z}}
-    \newcommand{\N}{\mathbb{N}}
-    \newcommand{\Q}{\mathbb{Q}}
-    \newcommand{\Rp}{\mathbb{R^+}}
-    \newcommand{\fn}[3][f]{#1\colon#2\to#3}
-    \newcommand{\ceil}[1]{\lceil #1 \rceil}
-    \newcommand{\floor}[1]{\lfloor #1 \rfloor}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Rp}{\mathbb{R^+}}
+\newcommand{\fn}[3][f]{#1\colon#2\to#3}
+\newcommand{\ceil}[1]{\lceil #1 \rceil}
+\newcommand{\floor}[1]{\lfloor #1 \rfloor}
 \newcommand{\F}{\mathbb{F}}
 \newcommand{\I}{\mathbb{I}}
+
+\newcommand{\MZ}[1]{\Z_{#1}^{\times}}
+\newcommand{\abs}[1]{|#1|}
+\newcommand{\norm}[1]{\Vert#1\Vert}
+
+
+% symbols
+\newcommand{\inv}[1]{{#1}^{-1}}
+\newcommand{\D}[1]{\cdot{#1}}
+
+
+
+\NewDocumentEnvironment{multieq}{m +b} % m = label, +b = body
+  {\begin{equation}\label{#1}\begin{split}#2\end{split}\end{equation}}
+  {}  % nothing to do at \end{multieq}
+
+\newenvironment{block}
+{\begin{flushleft}\setlength{\parskip}{0pt}\setlength{\parindent}{0pt}}
+{\end{flushleft}}
+
+\newcounter{question}
+\renewcommand{\theequation}{\thequestion.\arabic{equation}}
+
+\newcommand{\newquestion}{
+  \newpage
+  \stepcounter{question}
+  \setcounter{equation}{0}
+  \section*{Question \thequestion}
+}
 
 \DeclareOption{mathsets} {
      
