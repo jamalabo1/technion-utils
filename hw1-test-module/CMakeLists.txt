@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.16)
-project(HW1)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -16,7 +15,7 @@ add_library(mtm_blockchain_lib
 target_include_directories(
         mtm_blockchain_lib
         PUBLIC
-        .
+        234124
 )
 
 add_executable(
