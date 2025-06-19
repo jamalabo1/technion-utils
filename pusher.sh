@@ -1,47 +1,58 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Configuration
-PUBLIC_REMOTE="utils"
-PRIVATE_REMOTE="origin"
-PRIVATE_BRANCH=$(git branch --show-current)
-TMP_BRANCH="tmp-public-push"
-PUBLIC_BRANCH="latex"
+# ←—— CONFIGURE HERE —————————————————————————————————————
+REMOTE_NAME="utils"                        # name of the git remote
+LOCAL_BRANCH="utils-latex"                 # name of the local branch to maintain
+REMOTE_BRANCH="latex"                # name of the branch on the remote
+PATHS=(.vscode helpers fonts .gitignore pusher.sh)   # files/folders to include
+# ——————————————————————————————————————————————————————→
 
-# Directories to include in the public push
-INCLUDE_DIRS=(".vscode" "helpers" "fonts" ".gitignore" "pusher.sh")
-
-# Ensure clean working state
-if ! git diff --quiet || ! git diff --cached --quiet; then
-  echo "⚠️ Please commit or stash your changes first."
-  exit 1
+# 1. Stash any local changes (tracked + untracked)
+stash_ref=""
+if ! git diff-index --quiet HEAD --; then
+  stash_ref=$(git stash push -u -m "pre-${LOCAL_BRANCH}-stash")
 fi
 
-# Remove previous temp branch if exists
-if git rev-parse --verify $TMP_BRANCH >/dev/null 2>&1; then
-  git branch -D $TMP_BRANCH
+# 2. Remember current branch
+ORIGINAL_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+cleanup() {
+  git checkout "$ORIGINAL_BRANCH"
+  if [ -n "$stash_ref" ]; then
+    git stash pop || true
+  fi
+}
+trap cleanup EXIT
+
+# 3. Switch to (or create) the local target branch
+JUST_CREATED_BRANCH=0
+if git show-ref --quiet refs/heads/"$LOCAL_BRANCH"; then
+  git checkout "$LOCAL_BRANCH"
+else
+  git checkout --orphan "$LOCAL_BRANCH"
+  git rm -rf .
+  JUST_CREATED_BRANCH=1
 fi
 
-# Create a subtree with only the desired folders
-echo "📦 Splitting tree..."
+# 4. Pull in only the specified paths from the original branch
+git checkout "$ORIGINAL_BRANCH" -- "${PATHS[@]}"
 
-# Add each additional folder into the new branch
-for dir in "${INCLUDE_DIRS[@]:1}"; do
-git subtree split --prefix="${dir}" -b $TMP_BRANCH
-  # git read-tree --prefix="$dir/" -u $TMP_BRANCH $(git subtree split --prefix="$dir")
-done
+# 5. Commit & push if there are changes
+if ! git diff-index --quiet HEAD --; then
+  git add "${PATHS[@]}"
+  git commit -m "Automated $LOCAL_BRANCH commit $REMOTE_BRANCH @ $(date +%Y-%m-%d)"
+  if [ "$JUST_CREATED_BRANCH" -eq 1 ]; then
+    git push --force "$REMOTE_NAME" "$LOCAL_BRANCH":"$REMOTE_BRANCH"
+  else
+    git push "$REMOTE_NAME" "$LOCAL_BRANCH":"$REMOTE_BRANCH"
+  fi
+else
+  echo "No changes in ${PATHS[*]}; nothing to commit."
+fi
 
-  git commit -m "Add subtrees to $TMP_BRANCH"
+# 6. Restore original state
+trap - EXIT
+cleanup
 
-# Push the temp branch to public remote
-echo "🚀 Pushing public content to '$PUBLIC_REMOTE'..."
-git push -f $PUBLIC_REMOTE $TMP_BRANCH:$PUBLIC_BRANCH
-
-# Push full private branch to origin
-echo "🔐 Pushing private branch '$PRIVATE_BRANCH' to '$PRIVATE_REMOTE'..."
-git push $PRIVATE_REMOTE $PRIVATE_BRANCH
-
-# Cleanup
-git branch -D $TMP_BRANCH
-
-echo "✅ Done!"
+echo "✅ '$LOCAL_BRANCH' pushed to '$REMOTE_NAME/$REMOTE_BRANCH' and workspace restored."
