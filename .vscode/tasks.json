@@ -30,6 +30,18 @@
                 "reveal": "always",
                 "panel": "shared"
             }
+        },
+        {
+            "label": "Push utils branch",
+            "type": "shell",
+            "command": "${workspaceFolder}/pusher.sh",
+            "args": [],
+            "problemMatcher": [],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "panel": "shared"
+            }
         }
     ]
 }

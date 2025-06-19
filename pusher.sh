@@ -18,9 +18,9 @@ fi
 ORIGINAL_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
 cleanup() {
-  git checkout "$ORIGINAL_BRANCH"
+  git checkout "$ORIGINAL_BRANCH" > /dev/null 2>&1
   if [ -n "$stash_ref" ]; then
-    git stash pop || true
+    git stash pop > /dev/null 2>&1 || true
   fi
 }
 trap cleanup EXIT
@@ -28,24 +28,24 @@ trap cleanup EXIT
 # 3. Switch to (or create) the local target branch
 JUST_CREATED_BRANCH=0
 if git show-ref --quiet refs/heads/"$LOCAL_BRANCH"; then
-  git checkout "$LOCAL_BRANCH"
+  git checkout "$LOCAL_BRANCH" > /dev/null 2>&1
 else
-  git checkout --orphan "$LOCAL_BRANCH"
-  git rm -rf .
+  git checkout --orphan "$LOCAL_BRANCH" > /dev/null 2>&1
+  git rm -rf . > /dev/null 2>&1
   JUST_CREATED_BRANCH=1
 fi
 
 # 4. Pull in only the specified paths from the original branch
-git checkout "$ORIGINAL_BRANCH" -- "${PATHS[@]}"
+git checkout "$ORIGINAL_BRANCH" -- "${PATHS[@]}" > /dev/null 2>&1
 
 # 5. Commit & push if there are changes
 if ! git diff-index --quiet HEAD --; then
-  git add "${PATHS[@]}"
-  git commit -m "Automated $LOCAL_BRANCH commit $REMOTE_BRANCH @ $(date +%Y-%m-%d)"
+  git add "${PATHS[@]}" > /dev/null 2>&1
+  git commit --quiet -m "Automated $LOCAL_BRANCH commit $REMOTE_BRANCH @ $(date +%Y-%m-%d)"
   if [ "$JUST_CREATED_BRANCH" -eq 1 ]; then
-    git push --force "$REMOTE_NAME" "$LOCAL_BRANCH":"$REMOTE_BRANCH"
+    git push --quiet --force "$REMOTE_NAME" "$LOCAL_BRANCH":"$REMOTE_BRANCH" > /dev/null 2>&1
   else
-    git push "$REMOTE_NAME" "$LOCAL_BRANCH":"$REMOTE_BRANCH"
+    git push --quiet "$REMOTE_NAME" "$LOCAL_BRANCH":"$REMOTE_BRANCH" > /dev/null 2>&1
   fi
 else
   echo "No changes in ${PATHS[*]}; nothing to commit."
