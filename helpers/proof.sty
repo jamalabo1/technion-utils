@@ -1,0 +1,57 @@
+\ProvidesPackage{helpers/proof}[Custom proofs helpers]
+
+
+\usepackage{helpers/symbols}
+
+% \usepackage[a4paper, margin=1in]{geometry} % 1 inch margin on all sides
+% % \usepackage[margin=1.5in]{geometry} % Please keep the margins at 1.5 so that there is space for grader comments.
+% \usepackage{amsmath,amsthm,amssymb,hyperref}
+
+\RequirePackage{xcolor}
+
+
+% Declare Envs
+% \newenvironment{theorem}[2][Theorem]{\begin{trivlist}
+        % \item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+% \newenvironment{lemma}[2][Lemma]{\begin{trivlist}
+% \item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+% \newenvironment{claim}[2][Claim]{\begin{trivlist}
+        % \item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2}]}{\end{trivlist}}
+\newenvironment{problem}[2][Problem]{\begin{trivlist}
+        \item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+\newenvironment{proposition}[2][Proposition]{\begin{trivlist}
+        \item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+\newenvironment{corollary}[2][Corollary]{\begin{trivlist}
+        \item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+
+\newenvironment{solution}{\begin{proof}[Solution]}{\end{proof}}
+
+
+
+
+% Declare options
+\DeclareOption{*} {
+
+}
+
+
+% text helpers
+
+\newcommand{\textip}{\textit{in particular} }
+
+
+\AtBeginDocument{%
+    % Custom modifications here
+    \large % please keep the text at this size for ease of reading.
+    \linespread{1.5} % please keep 1.5 line spacing so that there is space for grader comments.
+
+}
+
+
+% Process selected options
+\ProcessOptions\relax
+
+
+
+\endinput
+

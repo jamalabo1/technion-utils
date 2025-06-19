@@ -1,0 +1,91 @@
+% for homeworks
+\ProvidesPackage{helpers/homework}[Custom Homework helpers]
+
+\usepackage[a4paper, margin=1in]{geometry} % 1 inch margin on all sides
+
+\usepackage{helpers/symbols}
+
+
+\newcounter{question}
+\renewcommand{\theequation}{\thequestion.\arabic{equation}}
+
+\newcommand{\newquestion}{
+  \newpage 
+  \refstepcounter{question}
+  \setcounter{equation}{0}
+  \section*{Question \thequestion}
+  \label{Q:\thequestion}
+}
+
+
+\newcounter{subquestion}[question]
+\renewcommand{\thesubquestion}{\thequestion.\alph{subquestion}}
+
+\newenvironment{subquestionenv}{%
+  \refstepcounter{subquestion}%
+  \begingroup%
+  \par\noindent\textbf{(\thesubquestion)}\hspace{0.5em}%
+}{%
+  \par\endgroup%
+}
+
+
+\makeatletter
+\newcommand{\currentcontext}{%
+  \@ifundefined{c@subquestion}{%
+    \thequestion%
+  }{%
+    \ifnum\value{subquestion}>0 %
+      \thequestion.\alph{subquestion}%
+    \else
+      \thequestion%
+    \fi
+  }%
+}
+\makeatother
+
+\makeatletter
+\newcommand{\newtheoremenv}[3][\bfseries]{%
+    % #1 = formatting (optional, default \bfseries)
+    % #2 = environment name
+    % #3 = display name
+    \newcounter{#2}[subquestion]%
+    \expandafter\renewcommand\csname the#2\endcsname{\arabic{#2}}%
+    \newenvironment{#2}{%
+        \refstepcounter{#2}%
+        \par\noindent{#1#3 \csname the#2\endcsname\space(\currentcontext).}%
+        \label{\currentcontext:#2:\arabic{#2}}%
+    }{%
+         \par%
+    }%
+}
+\makeatother
+
+% Usage with default formatting:
+\newtheoremenv{lemma}{Lemma}
+\newtheoremenv{claim}{Claim}
+
+% Usage with custom formatting:
+\newtheoremenv[\itshape\bfseries]{theorem}{Theorem}
+
+% for local ref's (here l local)
+\newcommand{\lref}[1]{%
+    \IfRefUndefinedExpandable{\currentcontext:#1}%
+        {\IfRefUndefinedExpandable{#1}%
+            {\textbf{??#1??}}%
+            {\eqref{#1}}%
+        }%
+        {\eqref{\currentcontext:#1}}%
+}
+\makeatother
+
+\AtBeginDocument{%
+  % Custom modifications here
+  \large % please keep the text at this size for ease of reading.
+\linespread{1.5} % please keep 1.5 line spacing so that there is space for grader comments.
+
+}
+
+
+% Process selected options
+\ProcessOptions\relax

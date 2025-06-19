@@ -1,0 +1,50 @@
+{
+    "latex-workshop.latex.recipes": [
+        {
+            "name": "xelatex",
+            "tools": [
+                "xelatex"
+            ]
+        }
+    ],
+    "latex-workshop.latex.tools": [
+        {
+            "name": "xelatex",
+            "command": "xelatex",
+            "args": [
+                "-synctex=1",
+                "-interaction=nonstopmode",
+                "-file-line-error",
+                "-output-directory=./.aux",
+                "%DOC%"
+            ],
+            "env": {
+                "TEXINPUTS": "..//:"
+            }
+        },
+        {
+            "name": "latexindent",
+            "command": "latexindent",
+            "args": [
+                "-w",
+                "%DOC%"
+            ],
+            "env": {
+                "PERL5LIB": "${env:HOME}x/perl5/lib/perl5"
+            },
+        }
+    ],
+    "latex-workshop.latex.autoBuild.run": "onSave",
+    "latex-workshop.latex.outDir": "./.aux",
+    "files.exclude": {
+        "**/.aux": true
+    },
+    "latex-workshop.formatting.latex": "latexindent",
+    "terminal.integrated.env.linux": {
+        "PERL5LIB": "${env:HOME}/perl5/lib/perl5"
+    },
+    "terminal.integrated.env.osx": {
+        "PERL5LIB": "${env:HOME}/perl5/lib/perl5"
+    },
+    "editor.formatOnSave": true
+}

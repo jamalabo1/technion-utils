@@ -1,0 +1,35 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Compile with LaTeX Workshop",
+            "type": "shell",
+            "command": "echo",
+            "args": [
+                "Triggering LaTeX Workshop build..."
+            ],
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "latex-workshop.build"
+            ]
+        },
+        {
+            "label": "Export compiled PDF (choose folder)",
+            "type": "shell",
+            "command": "${workspaceFolder}/.vscode/export_pdf.sh",
+            "args": [
+                "${fileDirname}",
+                "${fileBasenameNoExtension}"
+            ],
+            "dependsOn": [
+                "Compile with LaTeX Workshop"
+            ],
+            "problemMatcher": [],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "panel": "shared"
+            }
+        }
+    ]
+}

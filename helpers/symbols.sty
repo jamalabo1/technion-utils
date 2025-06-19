@@ -1,0 +1,109 @@
+\ProvidesPackage{helpers/symbols}[Custom symbols helpers]
+\usepackage{xparse}
+
+
+\usepackage{fontspec}
+\usepackage{polyglossia}
+% Load font from relative path
+\newfontfamily\hebrewfont[
+  Path = ../fonts/static/,
+  UprightFont = *-Regular.ttf,
+  BoldFont = *-Bold.ttf
+]{NotoSansHebrew}
+
+
+\usepackage{amsmath,amsthm,amssymb,hyperref, mathtools}
+\RequirePackage{xcolor}
+
+% spacing
+\newcommand{\Hquad}{\hspace{0.5em}} 
+\newcommand{\Fquad}{\hspace{0.6em}} 
+
+% Declare options
+\newcommand{\R}{\mathbb{R}}  
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Rp}{\mathbb{R^+}}
+
+
+% functions operations
+\newcommand{\fn}[3][f]{#1\colon#2\to#3}
+\newcommand{\im}[1]{Im(#1)}
+
+\newcommand{\ceil}[1]{\lceil #1 \rceil}
+\newcommand{\floor}[1]{\lfloor #1 \rfloor}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\I}{\mathbb{I}}
+
+\newcommand{\MZ}[1]{\Z_{#1}^{\ti\\mes}}
+\newcommand{\abs}[1]{|#1|}
+\newcommand{\norm}[1]{\Vert#1\Vert}
+
+
+% symbols
+\newcommand{\inv}[1]{{#1}^{-1}}
+\newcommand{\D}[1]{\cdot{#1}}
+% \newcommand{\divides}{\mathrel{\left| \kern-0.20em \right.}}
+\newcommand{\divides}{\mid}
+\newcommand{\ndivides}{\nmid}
+\newcommand{\xor}{\mathbin{\oplus}}
+\newcommand{\len}[1]{|#1|}
+\newcommand{\eqdef}{\coloneqq}
+
+
+\NewCommandCopy{\olor}{\lor}
+\renewcommand{\lor}{\;\olor\;}
+
+\NewDocumentEnvironment{multieq}{m +b} % m = label, +b = body
+  {\begin{equation}\label{#1}\begin{split}#2\end{split}\end{equation}}
+  {}  % nothing to do at \end{multieq}
+
+\newenvironment{block}
+{\begin{flushleft}\setlength{\parskip}{0pt}\setlength{\parindent}{0pt}}
+{\end{flushleft}}
+
+% used for overset + \eqref to a given sign (for equalites mostly) (label, sign)
+\newcommand{\refsign}[2]{\overset{\eqref{#1}}{#2}}
+
+% same as above by explenation instead of ref
+\newcommand{\explsign}[2]{\overset{\text{#1}}{#2}}
+
+\newcommand{\toinf}[1]{#1\to\infty}
+\newcommand{\ninflim}{\lim_{\toinf{n}}}
+
+
+% add padding to forall
+\NewCommandCopy{\oforall}{\forall}
+\NewCommandCopy{\oexists}{\exists}
+
+\renewcommand{\forall}[1]{\oforall{#1}\;}
+\renewcommand{\exists}[1]{\oexists{#1}\;}
+% same but the suffix p is for padding
+\newcommand{\existsp}[1]{\oexists{#1}\Fquad}
+\newcommand{\forallp}[1]{\oforall{#1}\Fquad}
+
+% sets operations
+\newcommand{\set}[1]{\{ #1 \}}
+\newcommand{\setsub}[2]{   #1 \backslash #2   }
+\newcommand{\elmsub}[2]{ \setsub{#1}{ \set{#2} }}
+\newcommand{\union}{\bigcup}
+\newcommand{\disunion}{\bigsqcup}
+\newcommand{\intersect}{\bigcap}
+
+\DeclareOption{mathsets} {
+     
+}
+\DeclareOption{functions}{
+}
+\DeclareOption{limits}{
+}
+\DeclareOption{powers}{
+    \newcommand{\powW}[2]{#1^{\!^{#2}}}
+    \newcommand{\pow}[2]{(#1)^{\!^{#2}}}
+}
+
+% Process selected options
+\ProcessOptions\relax
+
+\endinput
