@@ -12,5 +12,5 @@ case testing
 ### 2340118
 ASM debug + Test Runner
 
-### notes
-mostly latex package/helpers 
+### latex
+latex package/helpers for writing homeworks (mostly mathematical)
