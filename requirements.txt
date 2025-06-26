@@ -1,0 +1,4 @@
+numpy
+pdf2image
+pypdf
+wxPython

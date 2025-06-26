@@ -1,4 +1,5 @@
 import argparse
+import os
 from pypdf import PdfReader, PdfWriter, Transformation,PaperSize
 from pypdf.generic import RectangleObject
 
@@ -6,6 +7,7 @@ from pdf2image import convert_from_path
 from PIL import Image
 import numpy as np
 
+from core_utils.range_utils import parse_ranges
 
 import numpy as np
 
@@ -104,15 +106,6 @@ def scale_page(page, image):
 
     return page
 
-def parse_ranges(range_str):
-    ranges = []
-    for part in range_str.split(','):
-        if '-' in part:
-            start, end = map(int, part.split('-'))
-            ranges.extend(list(range(start, end+1)))
-        else:
-            ranges.append(int(part))
-    return ranges
 
 def scale_doc(path, page_range=None):
     reader = PdfReader(path)
@@ -120,7 +113,7 @@ def scale_doc(path, page_range=None):
 
     images = convert_from_path(path)
 
-    pages_to_process = range(0, len(reader.pages)) if page_range is None else parse_ranges(page_range)
+    pages_to_process = range(0, len(reader.pages)) if page_range is None else sorted(parse_ranges(page_range))
 
     print(pages_to_process)
 
@@ -131,13 +124,13 @@ def scale_doc(path, page_range=None):
         srcpage.scale_to(PaperSize.A4.width, PaperSize.A4.height)
         writer.add_page(srcpage)
 
-    filename = Path(path).name
+    filename = os.path.basename(path)
 
     print(filename)
 
     new_filename = "{0}.scaled.pdf".format('.'.join(filename.split('.')[:-1]))
 
-    writer.write(new_filename)
+    writer.write(os.path.join(os.path.dirname(path), new_filename))
 
 def main():
     parser = argparse.ArgumentParser(
