@@ -54,5 +54,19 @@ class ThumbnailPanel(wx.ScrolledWindow):
         else:
             self.selected.discard(btn.page_num)
             btn.SetBackgroundColour(wx.NullColour)
+
         btn.Refresh()
         self.on_selection(self.selected)
+        
+
+    def select_pages(self, pages):
+        # Clear current selection
+        self.selected.clear()
+        for idx, btn in enumerate(self.btns, start=1):
+            is_selected = idx in pages
+            btn.SetValue(is_selected)
+            # Build a toggle event and set its source
+            evt = wx.CommandEvent(wx.EVT_TOGGLEBUTTON.typeId, btn.GetId())
+            evt.SetEventObject(btn)
+            # Directly invoke the toggle handler to sync state and UI
+            self._on_toggle(evt)
