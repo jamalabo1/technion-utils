@@ -31,6 +31,7 @@ class PDFScalerFrame(wx.Frame):
         # Range text + Scale button
         hrange = wx.BoxSizer(wx.HORIZONTAL)
         self.range_txt = wx.TextCtrl(panel)
+        self.range_txt.Bind(wx.EVT_KILL_FOCUS, self.on_range_text_change)
         self.scale_btn = wx.Button(panel, label="Scale")
         self.scale_btn.Bind(wx.EVT_BUTTON, self.on_scale)
         hrange.Add(wx.StaticText(panel, label="Pages:"), 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 5)
@@ -42,7 +43,7 @@ class PDFScalerFrame(wx.Frame):
         self.SetSize((240*4 + 90, 800))
 
     def on_load(self, event):
-        dlg = wx.FileDialog(self, message="Choose a PDF file", wildcard="PDF files (*.pdf)|*.pdf",
+        dlg = wx.FileDialog(self, message="Choose a PDF file",
                             style=wx.FD_OPEN|wx.FD_FILE_MUST_EXIST)
         if dlg.ShowModal() == wx.ID_OK:
             self.pdf_path = dlg.GetPath()
@@ -91,3 +92,15 @@ class PDFScalerFrame(wx.Frame):
 
         wx.MessageBox("Scaled PDF", "Done", wx.ICON_INFORMATION)
         # self.Close()
+    def on_range_text_change(self, event):
+        # Parse the textual ranges and update the thumbnail selection
+        pages_arg = self.range_txt.GetValue().strip().replace(" ", "")
+        try:
+            pages = parse_ranges(pages_arg)
+        except ValueError:
+        # Invalid input: ignore until valid
+            return
+        self.selected = set(pages)
+        # Programmatically update thumbnails to match the text
+        self.thumb_panel.select_pages(self.selected)
+        event.Skip()

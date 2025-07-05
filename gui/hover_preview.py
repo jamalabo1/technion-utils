@@ -35,7 +35,7 @@ class HoverPreviewHandler:
 
         # Prepare image
         img = self.hover_btn.full_img.copy()
-        img = img.resize((1200, 800), Image.LANCZOS)
+        img = img.resize((600, 800), Image.LANCZOS)
         w, h = img.size
         bmp = wx.Bitmap.FromBuffer(w, h, img.convert("RGB").tobytes())
 

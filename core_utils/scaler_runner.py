@@ -15,5 +15,6 @@ def run_scaler(pdf_path: str, pages_arg: str) -> None:
         "-r",
         pages_arg
     ]
+    print(cmd)
     # Force working directory so scaler.py can do relative imports if needed
     subprocess.run(cmd, check=True, cwd=os.path.dirname(scaler_path))
