@@ -15,6 +15,8 @@
 \usepackage{amsmath,amsthm,amssymb,hyperref, mathtools}
 \RequirePackage{xcolor}
 
+\newcommand{\msym}[1]{\mathbb{#1}}
+
 % spacing
 \newcommand{\Hquad}{\hspace{0.5em}} 
 \newcommand{\Fquad}{\hspace{0.6em}} 
@@ -39,6 +41,7 @@
 \newcommand{\MZ}[1]{\Z_{#1}^{\ti\\mes}}
 \newcommand{\abs}[1]{|#1|}
 \newcommand{\norm}[1]{\Vert#1\Vert}
+\newcommand{\comp}{\circ}
 
 
 % symbols
@@ -49,7 +52,7 @@
 \newcommand{\ndivides}{\nmid}
 \newcommand{\xor}{\mathbin{\oplus}}
 \newcommand{\len}[1]{|#1|}
-\newcommand{\eqdef}{\coloneqq}
+\newcommand{\eqdef}{\vcentcolon=}
 
 
 \NewCommandCopy{\olor}{\lor}
@@ -65,9 +68,15 @@
 
 % used for overset + \eqref to a given sign (for equalites mostly) (label, sign)
 \newcommand{\refsign}[2]{\overset{\eqref{#1}}{#2}}
+\newcommand{\lrefsign}[2]{\overset{\lref{#1}}{#2}}
 
 % same as above by explenation instead of ref
 \newcommand{\explsign}[2]{\overset{\text{#1}}{#2}}
+
+% same as explsign, but with & for align
+% \newcommand{\alexplsign}[2]{\explsign{#1}{&#2}} 
+% % same as refsign, but with & for align
+% \newcommand{\alrefsign}[2]{\refsign{#1}{&#2}} 
 
 \newcommand{\toinf}[1]{#1\to\infty}
 \newcommand{\ninflim}{\lim_{\toinf{n}}}
@@ -90,6 +99,9 @@
 \newcommand{\union}{\bigcup}
 \newcommand{\disunion}{\bigsqcup}
 \newcommand{\intersect}{\bigcap}
+
+% improved frac
+\renewcommand{\frac}[3][]{\hbox{$#1$}\dfrac{#2}{#3}} 
 
 \DeclareOption{mathsets} {
      
