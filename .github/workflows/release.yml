@@ -34,22 +34,22 @@ jobs:
         run: |
           v=$(tr -d ' \r\n' < VERSION)
           echo "version=$v" >> $GITHUB_OUTPUT
-
-      - name: Set Major Version
-        id: major_version
-        run: |
-          VERSION="${{ steps.version.outputs.version }}"
-          MAJOR=$(echo $VERSION | cut -d. -f1)
+          MAJOR=$(echo $v | cut -d. -f1)
           echo "major=${MAJOR}" >> $GITHUB_OUTPUT
           echo "Full version: $VERSION"
           echo "Major version: $MAJOR"
           echo "tag=234218-v${VERSION}" >> $GITHUB_OUTPUT
 
+      - name: Set Major Version
+        id: major_version
+        run: |
+
+
       - name: filter non major tests
         id: filtered_commit
         run: |
-          MAJOR_VERSION="${{ steps.major_version.outputs.major }}"
-          VERSION_TAG="234218-v${{ steps.version.outputs.version }}"
+          MAJOR_VERSION="${{ steps.version.outputs.major }}"
+          VERSION_TAG="${{ steps.version.outputs.tag }}"
           
           EXCLUDE_DIRS=$(find tests -maxdepth 1 -type d -name "hw*" | grep -v "tests/hw${MAJOR_VERSION}" || true)
           
@@ -75,7 +75,7 @@ jobs:
 
       - name: push tags
         run: |
-          VERSION_TAG="234218-v${{ steps.version.outputs.version }}"
+          VERSION_TAG="${{ steps.version.outputs.tag }}"
           COMMIT_SHA="${{ steps.filtered_commit.outputs.commit_sha }}"
           
           
@@ -85,11 +85,11 @@ jobs:
           git tag -f $VERSION_TAG $COMMIT_SHA
           git push -f origin $VERSION_TAG
 
-      - name: delete release if already exists
+      - name: delete major release if already exists
         # if new it will error
         continue-on-error: true
         run: |
-          gh release delete "234218-v${{ steps.version.outputs.version }}" -y || echo "new release"
+          gh release delete "234218-v${{ steps.version.outputs.major }}:latest" -y || echo "new release"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -99,10 +99,20 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          # This is the primary tag for the release
           tag_name: 234218-v${{ steps.version.outputs.version }}
           release_name: 234218 Tester release v${{ steps.version.outputs.version }}
-          # IMPORTANT: This release is based on the tag just pushed,
+          commitish: ${{ steps.filtered_commit.outputs.commit_sha }}
+          draft: false
+          prerelease: false
+
+      - name: create major release
+        id: create_major_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: 234218-v${{ steps.version.outputs.major }}:latest
+          release_name: 234218 tester major latest release v${{ steps.version.outputs.major }}
           commitish: ${{ steps.filtered_commit.outputs.commit_sha }}
           draft: false
           prerelease: false
