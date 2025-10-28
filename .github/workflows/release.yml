@@ -1,7 +1,7 @@
 name: release
 on:
   workflow_dispatch:
-  push:
+  pull_request:
     branches:
       - 234218/tester
 
