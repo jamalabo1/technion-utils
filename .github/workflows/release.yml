@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - 234218/tester
+      - 234218/develop
 
 jobs:
   build:
