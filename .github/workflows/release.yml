@@ -60,13 +60,15 @@ jobs:
             echo "No directories to exclude."
           fi
           
-          # 2. Create a new orphan commit with only these files
+          # set creds for github 
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          
           # This commit is not part of any branch history
           git checkout --orphan temp-release-branch
           git add .
           git commit -m "Filtered content for release ${VERSION_TAG}"
           
-          # 3. Get the SHA of this new commit
           COMMIT_SHA=$(git rev-parse HEAD)
           echo "commit_sha=${COMMIT_SHA}" >> $GITHUB_OUTPUT
           echo "Commit SHA for tagging: $COMMIT_SHA"
@@ -75,9 +77,7 @@ jobs:
         run: |
           VERSION_TAG="234218-v${{ steps.version.outputs.version }}"
           COMMIT_SHA="${{ steps.filtered_commit.outputs.commit_sha }}"
-          
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
+        
           
           echo "Creating and pushing tag $VERSION_TAG to $COMMIT_SHA"
           
