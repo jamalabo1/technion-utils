@@ -58,7 +58,7 @@ handled by the `FetchContent` module.
 include(FetchContent)
 FetchContent_Declare(ds_tester
         GIT_REPOSITORY https://github.com/jamalabo1/technion-utils.git
-        GIT_TAG 234218-v{major}:latest # replace {major} with the desired test "batch?" (0, 1, 2, etc...)
+        GIT_TAG 234218-v{major}-latest # replace {major} with the desired test "batch?" (0, 1, 2, etc...)
         GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(ds_tester)
@@ -70,7 +70,7 @@ FetchContent_MakeAvailable(ds_tester)
   `ds_tester`.
     * `GIT_REPOSITORY`: The URL of the code repository.
     * `GIT_TAG`: This is the **most important** parameter. It specifies the *exact version* of the tests to download.
-        * `234218-v0:latest`: This tag breaks down as `[CourseID]-v[HW_Number]:latest`. It ensures you get the latest
+        * `234218-v0-latest`: This tag breaks down as `[CourseID]-v[HW_Number]-latest`. It ensures you get the latest
           tests and bug fixes for **Homework {Major}**.
     * `GIT_SHALLOW TRUE`: An optimization that downloads only that specific version, not the entire project history,
       making the download much faster.

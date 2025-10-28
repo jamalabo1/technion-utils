@@ -1,7 +1,7 @@
 name: release
 on:
   workflow_dispatch:
-  push:
+  pull_request:
     branches:
       - 234218/tester
 
@@ -39,11 +39,6 @@ jobs:
           echo "Full version: $VERSION"
           echo "Major version: $MAJOR"
           echo "tag=234218-v${VERSION}" >> $GITHUB_OUTPUT
-
-      - name: Set Major Version
-        id: major_version
-        run: |
-
 
       - name: filter non major tests
         id: filtered_commit
@@ -89,7 +84,7 @@ jobs:
         # if new it will error
         continue-on-error: true
         run: |
-          gh release delete "234218-v${{ steps.version.outputs.major }}:latest" -y || echo "new release"
+          gh release delete "234218-v${{ steps.version.outputs.major }}-latest" -y || echo "new release"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -111,7 +106,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: 234218-v${{ steps.version.outputs.major }}:latest
+          tag_name: 234218-v${{ steps.version.outputs.major }}-latest
           release_name: 234218 tester major latest release v${{ steps.version.outputs.major }}
           commitish: ${{ steps.filtered_commit.outputs.commit_sha }}
           draft: false
