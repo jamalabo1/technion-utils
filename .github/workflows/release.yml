@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - 234218/develop
+      - 234218/tester
 
 jobs:
   build:
@@ -94,7 +94,7 @@ jobs:
         with:
           # This is the primary tag for the release
           tag_name: 234218-v${{ steps.version.outputs.version }}
-          release_name: Release v${{ steps.version.outputs.version }}
+          release_name: 234218 Tester release v${{ steps.version.outputs.version }}
           # IMPORTANT: This release is based on the tag just pushed,
           commitish: ${{ steps.filtered_commit.outputs.commit_sha }}
           draft: false
