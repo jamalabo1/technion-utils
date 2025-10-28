@@ -1,0 +1,101 @@
+name: release
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 234218/tester
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: version
+        run: |
+          v=$(tr -d ' \r\n' < VERSION)
+          echo "version=$v" >> $GITHUB_OUTPUT
+
+      - name: Show version
+        run: echo "Version is ${{ steps.version.outputs.version }}"
+
+      # idk what build may be required...
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # to delete non-major tests
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: version
+        run: |
+          v=$(tr -d ' \r\n' < VERSION)
+          echo "version=$v" >> $GITHUB_OUTPUT
+
+      - name: Set Major Version
+        id: major_version
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          MAJOR=$(echo $VERSION | cut -d. -f1)
+          echo "major=${MAJOR}" >> $GITHUB_OUTPUT
+          echo "Full version: $VERSION"
+          echo "Major version: $MAJOR"
+          echo "tag=234218-v${VERSION}" >> $GITHUB_OUTPUT
+
+      - name: filter non major tests
+        id: filtered_commit
+        run: |
+          MAJOR_VERSION="${{ steps.major_version.outputs.major }}"
+          VERSION_TAG="234218-v${{ steps.version.outputs.version }}"
+          
+          EXCLUDE_DIRS=$(find tests -maxdepth 1 -type d -name "hw*" | grep -v "tests/hw${MAJOR_VERSION}" || true)
+          
+          if [ -n "$EXCLUDE_DIRS" ]; then
+            echo "Removing directories: $EXCLUDE_DIRS"
+            echo "$EXCLUDE_DIRS" | xargs rm -rf
+          else
+            echo "No directories to exclude."
+          fi
+          
+          # 2. Create a new orphan commit with only these files
+          # This commit is not part of any branch history
+          git checkout --orphan temp-release-branch
+          git add .
+          git commit -m "Filtered content for release ${VERSION_TAG}"
+          
+          # 3. Get the SHA of this new commit
+          COMMIT_SHA=$(git rev-parse HEAD)
+          echo "commit_sha=${COMMIT_SHA}" >> $GITHUB_OUTPUT
+          echo "Commit SHA for tagging: $COMMIT_SHA"
+
+      - name: Create and Push Version Tag
+        run: |
+          VERSION_TAG="234218-v${{ steps.version.outputs.version }}"
+          COMMIT_SHA="${{ steps.filtered_commit.outputs.commit_sha }}"
+          
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          
+          echo "Creating and pushing tag $VERSION_TAG to $COMMIT_SHA"
+          
+          # since this tag will be overwritten, force is needed :(
+          git tag -f $VERSION_TAG $COMMIT_SHA
+          git push -f origin $VERSION_TAG
+
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # This is the primary tag for the release
+          tag_name: 234218-v${{ steps.version.outputs.version }}
+          release_name: Release v${{ steps.version.outputs.version }}
+          # IMPORTANT: This release is based on the tag just pushed,
+          commitish: ${{ steps.filtered_commit.outputs.commit_sha }}
+          draft: false
+          prerelease: false
