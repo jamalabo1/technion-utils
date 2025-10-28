@@ -73,11 +73,11 @@ jobs:
           echo "commit_sha=${COMMIT_SHA}" >> $GITHUB_OUTPUT
           echo "Commit SHA for tagging: $COMMIT_SHA"
 
-      - name: Create and Push Version Tag
+      - name: push tags
         run: |
           VERSION_TAG="234218-v${{ steps.version.outputs.version }}"
           COMMIT_SHA="${{ steps.filtered_commit.outputs.commit_sha }}"
-        
+          
           
           echo "Creating and pushing tag $VERSION_TAG to $COMMIT_SHA"
           
@@ -85,8 +85,15 @@ jobs:
           git tag -f $VERSION_TAG $COMMIT_SHA
           git push -f origin $VERSION_TAG
 
+      - name: delete release if already exists
+        # if new it will error
+        continue-on-error: true
+        run: |
+          gh release delete "234218-v${{ steps.version.outputs.version }}" -y || echo "new release"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create GitHub Release
+      - name: create release
         id: create_release
         uses: actions/create-release@v1
         env:
