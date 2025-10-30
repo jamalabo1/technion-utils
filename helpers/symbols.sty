@@ -5,11 +5,11 @@
 \usepackage{fontspec}
 \usepackage{polyglossia}
 % Load font from relative path
-\newfontfamily\hebrewfont[
-  Path = ../fonts/static/,
-  UprightFont = *-Regular.ttf,
-  BoldFont = *-Bold.ttf
-]{NotoSansHebrew}
+% \newfontfamily\hebrewfont[
+%   Path = ../fonts/static/,
+%   UprightFont = *-Regular.ttf,
+%   BoldFont = *-Bold.ttf
+% ]{NotoSansHebrew}
 
 
 \usepackage{amsmath,amsthm,amssymb,hyperref, mathtools}
@@ -18,11 +18,11 @@
 \newcommand{\msym}[1]{\mathbb{#1}}
 
 % spacing
-\newcommand{\Hquad}{\hspace{0.5em}} 
-\newcommand{\Fquad}{\hspace{0.6em}} 
+\newcommand{\Hquad}{\hspace{0.5em}}
+\newcommand{\Fquad}{\hspace{0.6em}}
 
 % Declare options
-\newcommand{\R}{\mathbb{R}}  
+\newcommand{\R}{\mathbb{R}}
 \newcommand{\Z}{\mathbb{Z}}
 \newcommand{\N}{\mathbb{N}}
 \newcommand{\Q}{\mathbb{Q}}
@@ -59,12 +59,12 @@
 \renewcommand{\lor}{\;\olor\;}
 
 \NewDocumentEnvironment{multieq}{m +b} % m = label, +b = body
-  {\begin{equation}\label{#1}\begin{split}#2\end{split}\end{equation}}
-  {}  % nothing to do at \end{multieq}
+{\begin{equation}\label{#1}\begin{split}#2\end{split}\end{equation}}
+{}  % nothing to do at \end{multieq}
 
 \newenvironment{block}
 {\begin{flushleft}\setlength{\parskip}{0pt}\setlength{\parindent}{0pt}}
-{\end{flushleft}}
+        {\end{flushleft}}
 
 % used for overset + \eqref to a given sign (for equalites mostly) (label, sign)
 \newcommand{\refsign}[2]{\overset{\eqref{#1}}{#2}}
@@ -99,20 +99,24 @@
 \newcommand{\union}{\bigcup}
 \newcommand{\disunion}{\bigsqcup}
 \newcommand{\intersect}{\bigcap}
+\newcommand{\ssminus}[1]{\setminus\set{#1}}
 
 % improved frac
-\renewcommand{\frac}[3][]{\hbox{$#1$}\dfrac{#2}{#3}} 
+\renewcommand{\frac}[3][]{\hbox{$#1$}\dfrac{#2}{#3}}
+
+% seperators
+\newcommand{\sep}{,\;}
 
 \DeclareOption{mathsets} {
-     
+
 }
 \DeclareOption{functions}{
 }
 \DeclareOption{limits}{
 }
 \DeclareOption{powers}{
-    \newcommand{\powW}[2]{#1^{\!^{#2}}}
-    \newcommand{\pow}[2]{(#1)^{\!^{#2}}}
+\newcommand{\powW}[2]{#1^{\!^{#2}}}
+\newcommand{\pow}[2]{(#1)^{\!^{#2}}}
 }
 
 % Process selected options

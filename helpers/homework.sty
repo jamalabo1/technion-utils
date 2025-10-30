@@ -1,20 +1,50 @@
 % for homeworks
 \ProvidesPackage{helpers/homework}[Custom Homework helpers]
 
-\usepackage[a4paper, margin=1in]{geometry} % 1 inch margin on all sides
+\usepackage{helpers/core}
 
-\usepackage{helpers/symbols}
+\usepackage{framed}
+\usepackage{tocloft}
+
+
+% ----CONTENTS PAGE---- 
+\newif\ifshowcontents
+\showcontentstrue % defaults to true
+\DeclareOption{nocontents}{\showcontentsfalse}
+\renewcommand{\contentsname}{\LARGE\centering \@title \vspace{1em}\par} % Enlarged and centered ToC title
+\setlength{\cftsecindent}{2em} % Add left padding to start of entries
+% Table of contents formatting (tocloft)
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}} % dot leaders
+\renewcommand{\cftsecfont}{\bfseries}                 % bold section titles
+\renewcommand{\cftsecpagefont}{\bfseries}             % bold page numbers
+\setlength{\cftbeforesecskip}{1.5em}                  % spacing between entries
+% \setlength{\cftsecindent}{6pt}                        % no indentation (now set above)
+\setlength{\cftsecnumwidth}{2em}                      % space for section numbers
+% Right align page numbers in ToC, section titles left-aligned
+\renewcommand{\cftsecafterpnum}{\cftparfillskip}
+
+\newcommand{\authorname}{Author Name}
+\newcommand{\coursename}{Course Name}
 
 
 \newcounter{question}
 \renewcommand{\theequation}{\thequestion.\arabic{equation}}
 
-\newcommand{\newquestion}{
-  \newpage 
-  \refstepcounter{question}
-  \setcounter{equation}{0}
-  \section*{Question \thequestion}
-  \label{Q:\thequestion}
+\newcommand{\cindent}[1][1.5]{\par\noindent\hspace*{-#1em}}
+
+\newenvironment{question}{%
+  \newpage
+  \refstepcounter{question}%
+  \setcounter{equation}{0}%
+  \phantomsection%
+  \addcontentsline{toc}{section}{Question \thequestion}%
+  \section*{\cindent Question \thequestion}
+  \vspace{-1.5em}%
+  \cindent\rule{\textwidth}{0.4pt}\vspace{1em}%
+  \label{Q:\thequestion}%
+  \begin{block}%
+    }{%
+  \end{block}%
 }
 
 
@@ -24,7 +54,8 @@
 \newenvironment{subquestionenv}{%
   \refstepcounter{subquestion}%
   \begingroup%
-  \par\noindent\textbf{(\thesubquestion)}\hspace{0.5em}%
+  \cindent\textbf{(\thesubquestion)}\hspace{0.5em}%
+  \label{Q:\thesubquestion}%
 }{%
   \par\endgroup%
 }
@@ -46,21 +77,21 @@
 
 \makeatletter
 \newcommand{\newtheoremenv}[3][\bfseries]{%
-    % #1 = formatting (optional, default \bfseries)
-    % #2 = environment name
-    % #3 = display name
-    \newcounter{#2}[subquestion]%
-    \expandafter\renewcommand\csname the#2\endcsname{\arabic{#2}}%
-    \newenvironment{#2}{%
-        \refstepcounter{#2}%
-        % Allows disabling the numbering and context by defining \disabletheoremnumbering
-        \par\noindent{#1#3%
-        \ifdefined\disabletheoremnumbering~\csname the#2\endcsname\else~\csname the#2\endcsname\space(\currentcontext)\fi}%
-        \edef\@currentlabel{\currentcontext.\arabic{#2}}%
-        \label{\currentcontext:#2:\arabic{#2}}%
-    }{%
-         \par%
-    }%
+  % #1 = formatting (optional, default \bfseries)
+  % #2 = environment name
+  % #3 = display name
+  \newcounter{#2}[subquestion]%
+  \expandafter\renewcommand\csname the#2\endcsname{\arabic{#2}}%
+  \newenvironment{#2}{%
+    \refstepcounter{#2}%
+    % Allows disabling the numbering and context by defining \disabletheoremnumbering
+    \cindent[1]{#1#3%
+      \ifdefined\disabletheoremnumbering~\csname the#2\endcsname\else~\csname the#2\endcsname\space(\currentcontext)\fi}%
+    \edef\@currentlabel{\currentcontext.\arabic{#2}}%
+    \label{\currentcontext:#2:\arabic{#2}}%
+  }{%
+    \par%
+  }%
 }
 \makeatother
 
@@ -69,6 +100,8 @@
 
 \newtheoremenv{claim}{Claim}
 
+\newtheoremenv{definition}{Definition}
+
 % \newtheoremenv{corollary}{Corollary}
 
 % Usage with custom formatting:
@@ -76,24 +109,45 @@
 
 % for local ref's (here l local)
 \newcommand{\lref}[1]{%
-    \IfRefUndefinedExpandable{\currentcontext:#1}%
-        {\IfRefUndefinedExpandable{#1}%
-            {\textbf{??#1??}}%
-            {\eqref{#1}}%
-        }%
-        {\eqref{\currentcontext:#1}}%
+  \IfRefUndefinedExpandable{\currentcontext:#1}%
+  {\IfRefUndefinedExpandable{#1}%
+    {\textbf{??#1??}}%
+    {\eqref{#1}}%
+  }%
+  {\eqref{\currentcontext:#1}}%
 }
+
+\newcommand{\frontpage}{
+  \tableofcontents
+  \vfill
+  \vspace{2em}
+  \noindent
+  \begin{center}
+    \begin{minipage}{0.6\textwidth}
+      \begin{framed}
+        \begin{center}
+          \textbf{Author:} \authorname \\
+          \textbf{Course:} \coursename \\
+        \end{center}
+      \end{framed}
+    \end{minipage}
+  \end{center}
+  \vspace{1em}
+  \clearpage
+}
+
+
 \makeatother
 
 \AtBeginDocument{%
-  % Custom modifications here
-  \large % please keep the text at this size for ease of reading.
-\linespread{1.5} % please keep 1.5 line spacing so that there is space for grader comments.
-
+  \ifshowcontents
+    \frontpage
+  \fi
+  \large
+  \linespread{2} % 
 }
 
 
 
 % Process selected options
 \ProcessOptions\relax
-

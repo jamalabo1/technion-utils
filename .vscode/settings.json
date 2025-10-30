@@ -19,7 +19,7 @@
                 "%DOC%"
             ],
             "env": {
-                "TEXINPUTS": "..//:"
+                "TEXINPUTS": "..//:../..//:"
             }
         },
         {
@@ -30,21 +30,15 @@
                 "%DOC%"
             ],
             "env": {
-                "PERL5LIB": "${env:HOME}x/perl5/lib/perl5"
+                "PERL5LIB": "${env:HOME}/perl5/lib/perl5"
             },
         }
     ],
     "latex-workshop.latex.autoBuild.run": "onSave",
-    "latex-workshop.latex.outDir": "./.aux",
     "files.exclude": {
         "**/.aux": true
     },
     "latex-workshop.formatting.latex": "latexindent",
-    "terminal.integrated.env.linux": {
-        "PERL5LIB": "${env:HOME}/perl5/lib/perl5"
-    },
-    "terminal.integrated.env.osx": {
-        "PERL5LIB": "${env:HOME}/perl5/lib/perl5"
-    },
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "latex-workshop.latex.outDir": "./.aux"
 }
