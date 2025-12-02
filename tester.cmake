@@ -33,8 +33,11 @@ function(ds_tester_attach student_target)
     if (EXISTS ${TESTS_DIR})
         set(test_target ${DS_HW}_tests)
 
+        file(GLOB test_SRCs CONFIGURE_DEPENDS "${TESTS_DIR}/*.cpp")
+
         add_executable(${test_target}
-                ${TESTS_DIR}/unit.cpp
+                ${test_SRCs}
+#                ${TESTS_DIR}/unit.cpp
         )
 
         target_include_directories(${test_target} PUBLIC ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/include)
