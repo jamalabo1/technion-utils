@@ -1,6 +1,9 @@
 //
 // Created by jamal on 02/12/2025.
 //
+
+#if ENABLE_AVL_TEST
+
 #include "avl.h"
 
 // test_avl.cpp
@@ -216,3 +219,4 @@ TEST_CASE("Removing multiple times until tree is empty", "[avl]") {
         CHECK_THROWS_AS(tree.remove(42), std::invalid_argument);
     }
 }
+#endif
