@@ -3,7 +3,7 @@
 //
 #define CATCH_CONFIG_MAIN // provided catch main
 
-#include <catch2/catch.hpp>
+#include <catch2/old_catch.hpp>
 
 #include "hw0.h"
 
