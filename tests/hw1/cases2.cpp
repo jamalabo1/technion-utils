@@ -423,7 +423,7 @@ TEST_CASE("v2 Failure operations must not change points or enrollment") {
     REQUIRE(afterComplete.ans() == 7);
 }
 
-TEST_CASE("v2 Re-add a removed student with same ID: new student must not inherit old bonuses") {
+TEST_CASE("v2 Re-add a removed student with same ID, new student must not inherit") {
     TechSystem sys;
 
     // Add student and some structure
