@@ -6,6 +6,8 @@ This guide explains how to integrate and configure the `ds-tester` framework for
 
 ## Step 0: Correct Project Structure (Library + Executable)
 
+#### There is an example file at ExampleCMakeLists.txt
+
 Before the tester can work, your own project **must** have a **library**. The tester is a separate executable program
 that *links* against your library to run its functions.
 
@@ -58,7 +60,7 @@ handled by the `FetchContent` module.
 include(FetchContent)
 FetchContent_Declare(ds_tester
         GIT_REPOSITORY https://github.com/jamalabo1/technion-utils.git
-        GIT_TAG 234218-v{major}-latest # replace {major} with the desired test "batch?" (0, 1, 2, etc...)
+        GIT_TAG 234218-v1-latest # replace {major} with the desired test "batch?" (0, 1, 2, etc...)
         GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(ds_tester)
