@@ -1,0 +1,128 @@
+name: Test Runner
+on:
+  workflow_dispatch:
+    inputs:
+      tests-branch:
+        description: Tests branch name
+        type: string
+        required: true
+        default: "2340218/hw1/tests/runner"
+      run-valgrind:
+        description: Run tests with valgrind
+        type: boolean
+        default: false
+      case-max-fail:
+        description: Case tests max failure (Advanced)
+        type: number
+        required: true
+        default: 0
+      valgrind-max-fail:
+        description: Valgrind tests max failure (Advanced)
+        type: number
+        required: true
+        default: 10
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure CMake
+        run: |
+          cmake -B ${{github.workspace}}/build \
+          -D CMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}  \
+          -D CMAKE_INSTALL_PREFIX:PATH="${{github.workspace}}/project" \
+          -D DISABLE_DS_TESTING=ON
+
+      - name: Build
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+      - name: Install
+        run: cmake --install ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+      - name: Store binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: binaries
+          path: |
+            ${{github.workspace}}/project
+  case-tests:
+    name: Case tests
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download binaries
+        uses: actions/download-artifact@v4
+        with:
+          name: binaries
+
+      - name: Pull tests requirements
+        working-directory: bin
+        run: |
+          git clone https://gitlab.com/jamalabo1/technion-utils --single-branch --depth 1 --branch \
+          ${{ github.event.inputs.tests-branch }} temp
+          cd temp && mv * ../ && rm -rf temp
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+          cache: 'pip' # caching pip dependencies
+      - run: pip install -r bin/requirements.txt
+
+      - name: Case tests
+        working-directory: bin
+        run: |
+          pytest -v --show-capture=no engine/runner2.py --maxfail=${{github.event.inputs.case-max-fail}}
+
+      - name: Archive Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tests outputs
+          path: ./bin/**/*.out
+
+  valgrind-tests:
+    if: ${{github.event.inputs.run-valgrind=='true'}}
+    name: Valgrind tests
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download binaries
+        uses: actions/download-artifact@v4
+        with:
+          name: binaries
+
+      - name: Pull tests requirements
+        working-directory: bin
+        run: |
+          git clone https://gitlab.com/jamalabo1/technion-utils --single-branch --depth 1 --branch \
+          ${{ github.event.inputs.tests-branch }} temp
+          cd temp && mv * ../ && rm -rf temp
+
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+          cache: 'pip' # caching pip dependencies
+      - run: pip install -r bin/requirements.txt
+
+      - name: Setup valgrind
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y valgrind
+
+      - name: Valgrind Test
+        working-directory: bin
+        run: |
+          ls
+          pytest --valgrind engine/runner2.py --verbose --capture=tee-sys --maxfail=${{github.event.inputs.valgrind-max-fail}}
+
+      - name: Archive Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: valgrind output
+          path: ./bin/**/valgrind-out.txt
