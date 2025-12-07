@@ -2,17 +2,8 @@
 // Created by jamal on 03/12/2025.
 //
 
-// techsystem_tests.cpp
-// Catch2 tests for TechSystem wet1 – edge cases and spec coverage.
-//
-// NOTE:
-//  - Adjust the #include for TechSystem header to your actual filename.
-//  - If you use Catch2 v3, replace "catch.hpp" with <catch2/catch_test_macros.hpp>
-//    and keep the TEST_CASE / REQUIRE macros as-is.
-
 #include <catch2/catch_test_macros.hpp>
-
-#include "TechSystem26a1.h"  // <-- change if your header has a different name
+#include "TechSystem26a1.h"
 
 // Small helper to read points safely
 static int getPointsOrMinusOne(TechSystem &sys, int studentId, StatusType expectedStatus)
@@ -28,7 +19,7 @@ static int getPointsOrMinusOne(TechSystem &sys, int studentId, StatusType expect
 /******************************
  * addStudent + getStudentPoints
  ******************************/
-TEST_CASE("v3 addStudent and getStudentPoints - input validation and basic behavior")
+TEST_CASE("addStudent and getStudentPoints - input validation and basic behavior")
 {
     TechSystem sys;
 
@@ -71,7 +62,7 @@ TEST_CASE("v3 addStudent and getStudentPoints - input validation and basic behav
 /******************************
  * addCourse
  ******************************/
-TEST_CASE("v3 addCourse - input validation and duplicates")
+TEST_CASE("addCourse - input validation and duplicates")
 {
     TechSystem sys;
 
@@ -93,7 +84,7 @@ TEST_CASE("v3 addCourse - input validation and duplicates")
 /******************************
  * removeStudent
  ******************************/
-TEST_CASE("v3 removeStudent - all cases")
+TEST_CASE("removeStudent - all cases")
 {
     TechSystem sys;
     REQUIRE(sys.addStudent(1) == StatusType::SUCCESS);
@@ -145,7 +136,7 @@ TEST_CASE("v3 removeStudent - all cases")
 /******************************
  * removeCourse
  ******************************/
-TEST_CASE("v3 removeCourse - all cases")
+TEST_CASE("removeCourse - all cases")
 {
     TechSystem sys;
     REQUIRE(sys.addCourse(10, 3) == StatusType::SUCCESS);
@@ -194,7 +185,7 @@ TEST_CASE("v3 removeCourse - all cases")
 /******************************
  * enrollStudent
  ******************************/
-TEST_CASE("v3 enrollStudent - invalid input and failure reasons")
+TEST_CASE("enrollStudent - invalid input and failure reasons")
 {
     TechSystem sys;
     REQUIRE(sys.addStudent(1) == StatusType::SUCCESS);
@@ -240,7 +231,7 @@ TEST_CASE("v3 enrollStudent - invalid input and failure reasons")
 /******************************
  * completeCourse
  ******************************/
-TEST_CASE("v3 completeCourse - all status cases")
+TEST_CASE("completeCourse - all status cases")
 {
     TechSystem sys;
     REQUIRE(sys.addStudent(1) == StatusType::SUCCESS);
@@ -289,7 +280,7 @@ TEST_CASE("v3 completeCourse - all status cases")
 /******************************
  * awardAcademicPoints
  ******************************/
-TEST_CASE("v3 awardAcademicPoints - invalid inputs and empty system")
+TEST_CASE("awardAcademicPoints - invalid inputs and empty system")
 {
     TechSystem sys;
 
@@ -317,7 +308,7 @@ TEST_CASE("v3 awardAcademicPoints - invalid inputs and empty system")
     }
 }
 
-TEST_CASE("v3 awardAcademicPoints - only affects students present at time of call")
+TEST_CASE("awardAcademicPoints - only affects students present at time of call")
 {
     TechSystem sys;
     REQUIRE(sys.addStudent(1) == StatusType::SUCCESS);
@@ -345,7 +336,7 @@ TEST_CASE("v3 awardAcademicPoints - only affects students present at time of cal
     REQUIRE(s3 == 5);  // only the second bonus
 }
 
-TEST_CASE("v3 awardAcademicPoints with enrolled students and courses")
+TEST_CASE("awardAcademicPoints with enrolled students and courses")
 {
     TechSystem sys;
     REQUIRE(sys.addStudent(1) == StatusType::SUCCESS);
@@ -364,7 +355,7 @@ TEST_CASE("v3 awardAcademicPoints with enrolled students and courses")
 /******************************
  * getStudentPoints - status coverage
  ******************************/
-TEST_CASE("v3 getStudentPoints - all statuses")
+TEST_CASE("getStudentPoints - all statuses")
 {
     TechSystem sys;
 
@@ -404,7 +395,7 @@ TEST_CASE("v3 getStudentPoints - all statuses")
 /******************************
  * Integration scenario from the spec
  ******************************/
-TEST_CASE("v3 Integration scenario - matches example from homework PDF")
+TEST_CASE("Integration scenario - matches example from homework PDF")
 {
     TechSystem sys;
 

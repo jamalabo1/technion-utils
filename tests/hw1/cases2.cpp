@@ -1,17 +1,10 @@
 //
 // Created by jamal on 03/12/2025.
 //
-// test_techsystem_extended.cpp
 #include <catch2/catch_test_macros.hpp>
-
-// Adjust if your header is named differently:
 #include "TechSystem26a1.h"
 
-// -----------------------------------------------------------------------------
-// BASIC BEHAVIOR (from previous answer, kept for completeness)
-// -----------------------------------------------------------------------------
-
-TEST_CASE("v2 addStudent: invalid, success, duplicate") {
+TEST_CASE("addStudent: invalid, success, duplicate") {
     TechSystem sys;
 
     // Invalid IDs
@@ -28,7 +21,7 @@ TEST_CASE("v2 addStudent: invalid, success, duplicate") {
     REQUIRE(sys.addStudent(2) == StatusType::SUCCESS);
 }
 
-TEST_CASE("v2 removeStudent: invalid, non-existing, enrolled constraint") {
+TEST_CASE("removeStudent: invalid, non-existing, enrolled constraint") {
     TechSystem sys;
 
     // Invalid input
@@ -51,7 +44,7 @@ TEST_CASE("v2 removeStudent: invalid, non-existing, enrolled constraint") {
     REQUIRE(sys.removeStudent(20) == StatusType::FAILURE);
 }
 
-TEST_CASE("v2 addCourse: invalid, success, duplicate") {
+TEST_CASE("addCourse: invalid, success, duplicate") {
     TechSystem sys;
 
     // Invalid inputs (courseId <=0 or points <=0)
@@ -70,7 +63,7 @@ TEST_CASE("v2 addCourse: invalid, success, duplicate") {
     REQUIRE(sys.addCourse(2, 5) == StatusType::SUCCESS);
 }
 
-TEST_CASE("v2 removeCourse: invalid, non-existing, has students constraint") {
+TEST_CASE("removeCourse: invalid, non-existing, has students constraint") {
     TechSystem sys;
 
     // Invalid input
@@ -92,7 +85,7 @@ TEST_CASE("v2 removeCourse: invalid, non-existing, has students constraint") {
     REQUIRE(sys.removeCourse(20) == StatusType::FAILURE);
 }
 
-TEST_CASE("v2 enrollStudent: invalid, missing entities, duplicates") {
+TEST_CASE("enrollStudent: invalid, missing entities, duplicates") {
     TechSystem sys;
 
     // Invalid inputs
@@ -120,7 +113,7 @@ TEST_CASE("v2 enrollStudent: invalid, missing entities, duplicates") {
     REQUIRE(sys.enrollStudent(2, 1)  == StatusType::SUCCESS);
 }
 
-TEST_CASE("v2 completeCourse: invalid, missing, not enrolled, success & double complete") {
+TEST_CASE("completeCourse: invalid, missing, not enrolled, success & double complete") {
     TechSystem sys;
 
     REQUIRE(sys.completeCourse(0, 1)  == StatusType::INVALID_INPUT);
@@ -154,7 +147,7 @@ TEST_CASE("v2 completeCourse: invalid, missing, not enrolled, success & double c
     REQUIRE(sys.completeCourse(1, 1) == StatusType::FAILURE);
 }
 
-TEST_CASE("v2 removeStudent and removeCourse after completion") {
+TEST_CASE("removeStudent and removeCourse after completion") {
     TechSystem sys;
 
     REQUIRE(sys.addStudent(1) == StatusType::SUCCESS);
@@ -175,7 +168,7 @@ TEST_CASE("v2 removeStudent and removeCourse after completion") {
     REQUIRE(sys.removeStudent(1) == StatusType::SUCCESS);
 }
 
-TEST_CASE("v2 awardAcademicPoints: invalid, empty system, new vs existing students") {
+TEST_CASE("awardAcademicPoints: invalid, empty system, new vs existing students") {
     TechSystem sys;
 
     // Invalid input
@@ -215,7 +208,7 @@ TEST_CASE("v2 awardAcademicPoints: invalid, empty system, new vs existing studen
     REQUIRE(r5.ans() == 2);  // 0 + 2
 }
 
-TEST_CASE("v2 getStudentPoints: invalid, missing, and basic progression") {
+TEST_CASE("getStudentPoints: invalid, missing, and basic progression") {
     TechSystem sys;
 
     // Invalid ids
@@ -260,7 +253,7 @@ TEST_CASE("v2 getStudentPoints: invalid, missing, and basic progression") {
 // EXAMPLE RUN FROM SPEC (sanity check) :contentReference[oaicite:0]{index=0}
 // -----------------------------------------------------------------------------
 
-TEST_CASE("v2 Full example sequence from spec") {
+TEST_CASE("Full example sequence from spec") {
     TechSystem sys;
 
     REQUIRE(sys.addCourse(1, 3)  == StatusType::SUCCESS);
@@ -316,7 +309,7 @@ TEST_CASE("v2 Full example sequence from spec") {
 // EXTRA EDGE CASES
 // -----------------------------------------------------------------------------
 
-TEST_CASE("v2 Student enrolled in multiple courses; independent completions and removals") {
+TEST_CASE("Student enrolled in multiple courses; independent completions and removals") {
     TechSystem sys;
 
     REQUIRE(sys.addStudent(1)      == StatusType::SUCCESS);
@@ -355,7 +348,7 @@ TEST_CASE("v2 Student enrolled in multiple courses; independent completions and 
     REQUIRE(sys.removeStudent(1) == StatusType::SUCCESS);
 }
 
-TEST_CASE("v2 Many students in one course; removal only when last leaves") {
+TEST_CASE("Many students in one course; removal only when last leaves") {
     TechSystem sys;
 
     REQUIRE(sys.addCourse(10, 1) == StatusType::SUCCESS);
@@ -387,7 +380,7 @@ TEST_CASE("v2 Many students in one course; removal only when last leaves") {
     REQUIRE(sys.removeCourse(10) == StatusType::SUCCESS);
 }
 
-TEST_CASE("v2 Failure operations must not change points or enrollment") {
+TEST_CASE("Failure operations must not change points or enrollment") {
     TechSystem sys;
 
     REQUIRE(sys.addStudent(1)    == StatusType::SUCCESS);
@@ -423,7 +416,7 @@ TEST_CASE("v2 Failure operations must not change points or enrollment") {
     REQUIRE(afterComplete.ans() == 7);
 }
 
-TEST_CASE("v2 Re-add a removed student with same ID, new student must not inherit") {
+TEST_CASE("Re-add a removed student with same ID, new student must not inherit") {
     TechSystem sys;
 
     // Add student and some structure
@@ -455,7 +448,7 @@ TEST_CASE("v2 Re-add a removed student with same ID, new student must not inheri
     REQUIRE(newStu2.ans() == 3);
 }
 
-TEST_CASE("v2 awardAcademicPoints interleaved with enroll/complete on multiple students") {
+TEST_CASE("awardAcademicPoints interleaved with enroll/complete on multiple students") {
     TechSystem sys;
 
     REQUIRE(sys.addCourse(10, 3) == StatusType::SUCCESS);
@@ -509,7 +502,7 @@ TEST_CASE("v2 awardAcademicPoints interleaved with enroll/complete on multiple s
     REQUIRE(f3.ans() == 2);  // 0 + 2
 }
 
-TEST_CASE("v2 getStudentPoints is pure-observer and doesn't change anything") {
+TEST_CASE("getStudentPoints is pure-observer and doesn't change anything") {
     TechSystem sys;
 
     REQUIRE(sys.addStudent(1) == StatusType::SUCCESS);
@@ -530,7 +523,7 @@ TEST_CASE("v2 getStudentPoints is pure-observer and doesn't change anything") {
     REQUIRE(after.ans() == 3);
 }
 
-TEST_CASE("v2 Boundary-ish IDs and mix of failures & successes") {
+TEST_CASE("Boundary-ish IDs and mix of failures & successes") {
     TechSystem sys;
 
     const int bigId = 1'000'000'007; // big but still valid int
