@@ -1,5 +1,4 @@
 //
 // Created by jamal on 29/10/2025.
 //
-
-// THIS IS JUST A DECOY TEST FILE FOR TESTING WORKFLOW ACTIONS
+#define CATCH_CONFIG_MAIN // provided catch main

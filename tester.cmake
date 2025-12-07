@@ -33,20 +33,44 @@ function(ds_tester_attach student_target)
     if (EXISTS ${TESTS_DIR})
         set(test_target ${DS_HW}_tests)
 
+        file(GLOB test_SRCs CONFIGURE_DEPENDS "${TESTS_DIR}/*.cpp")
+
         add_executable(${test_target}
-                ${TESTS_DIR}/unit.cpp
+                ${test_SRCs}
+                #                ${TESTS_DIR}/unit.cpp
         )
+        # link student library
+        target_link_libraries(${test_target} PUBLIC ${student_target})
 
         target_include_directories(${test_target} PUBLIC ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/include)
+
+        # link catch2
+        Include(FetchContent)
+
+        FetchContent_Declare(
+                Catch2
+                GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+                GIT_TAG v3.8.1 # or a later release
+        )
+
+        FetchContent_MakeAvailable(Catch2)
+
+        target_link_libraries(${test_target} PRIVATE Catch2::Catch2WithMain)
+
+        list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 
         # to enable students to keep their add_exec pipeline and not require lib + exec split, a decoy library is introduced and is created on the fly:
         # this only copies srcs & include dirs, if more customization is required, switch to lib/exec pattern instead and link to lib
 
-        target_link_libraries(${DS_HW}_tests PRIVATE ${student_target})
+#        enable_testing()
 
-        enable_testing()
+        include(CTest)
+        include(Catch)
 
-        add_test(NAME ${DS_HW}_public COMMAND ${test_target})
+        catch_discover_tests(${test_target})
+
+
+#        add_test(NAME ${DS_HW}_public COMMAND ${test_target})
 
     else ()
         message(WARNING "${DS_HW} tests directory was not found!")
