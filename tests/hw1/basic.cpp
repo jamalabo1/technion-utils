@@ -31,3 +31,14 @@ TEST_CASE("Points reset on student re-add") {
 
     REQUIRE(sys.getStudentPoints(1).ans() == 0);
 }
+
+TEST_CASE("Validation is done before avl check") {
+    TechSystem sys;
+
+    REQUIRE(sys.enrollStudent(-1, 1) == StatusType::INVALID_INPUT);
+
+    REQUIRE(sys.addCourse(1, 1) == StatusType::SUCCESS);
+
+    REQUIRE(sys.enrollStudent(-1, 1) == StatusType::INVALID_INPUT);
+    REQUIRE(sys.enrollStudent(1, -1) == StatusType::INVALID_INPUT);
+}

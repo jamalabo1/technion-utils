@@ -32,8 +32,10 @@ function(ds_tester_attach student_target)
 
     if (EXISTS ${TESTS_DIR})
         set(test_target ${DS_HW}_tests)
+        set(test_target_gtest ${DS_HW}_gtest_tests)
 
         file(GLOB test_SRCs CONFIGURE_DEPENDS "${TESTS_DIR}/*.cpp")
+        file(GLOB test_gtest_SRCs CONFIGURE_DEPENDS "${TESTS_DIR}_gtest/*.cpp")
 
         add_executable(${test_target}
                 ${test_SRCs}
@@ -62,12 +64,41 @@ function(ds_tester_attach student_target)
         # to enable students to keep their add_exec pipeline and not require lib + exec split, a decoy library is introduced and is created on the fly:
         # this only copies srcs & include dirs, if more customization is required, switch to lib/exec pattern instead and link to lib
 
-#        enable_testing()
+        enable_testing()
 
         include(CTest)
         include(Catch)
 
         catch_discover_tests(${test_target})
+
+
+        FetchContent_Declare(
+                googletest
+                GIT_REPOSITORY https://github.com/google/googletest.git
+                GIT_TAG        v1.14.0
+#                URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+                DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+        )
+        # For Windows: Prevent overriding the parent project's compiler/linker settings
+        set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+        FetchContent_MakeAvailable(googletest)
+
+        add_executable(
+                ${test_target_gtest}
+
+                ${test_gtest_SRCs}
+        )
+
+        target_link_libraries(
+                ${test_target_gtest}
+                PUBLIC
+                ${student_target}
+                GTest::gtest_main
+        )
+
+
+        include(GoogleTest)
+        gtest_discover_tests(${test_target_gtest})
 
 
 #        add_test(NAME ${DS_HW}_public COMMAND ${test_target})
