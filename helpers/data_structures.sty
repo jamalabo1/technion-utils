@@ -1,0 +1,62 @@
+% since data structers require new page for each subquestion
+\makeatletter
+\newif\if@firstsubquestion
+\@firstsubquestiontrue
+
+\let\origquestion\question
+\let\endorigquestion\endquestion
+\renewenvironment{question}{%
+    % reset the "first subquestion" flag for each new question
+    \@firstsubquestiontrue
+    \origquestion
+}{%
+    \endorigquestion
+}
+
+\let\origsubquestionenv\subquestionenv
+\let\endorigsubquestionenv\endsubquestionenv
+\renewenvironment{subquestionenv}{%
+    \if@firstsubquestion
+        \global\@firstsubquestionfalse
+    \else
+        \newpage
+    \fi
+    \origsubquestionenv
+}{%
+    \endorigsubquestionenv
+}
+\makeatother
+
+
+\NewDocumentEnvironment{method}{m +b} % m = method name, b = body
+{
+    \noindent\textbf{\color{blue}\large\textbf{#1}}\vspace{0.3em}\\
+    #2
+    \noindent\hrulefill
+}
+{}  % nothing to do at \end{multieq}
+
+\NewDocumentEnvironment{complexity}{b}
+{
+    \begin{itemize}
+        #1
+    \end{itemize}
+}{}
+
+\NewDocumentEnvironment{time_complexity}{b}
+{
+    \begin{subitem}
+        \textbf{Time complexity}: #1
+    \end{subitem}
+}{}
+
+\NewDocumentEnvironment{space_complexity}{b}
+{
+    \begin{subitem}
+        \textbf{Space complexity}: #1
+    \end{subitem}
+}{}
+
+
+% texts
+\renewcommand{\t}{\texttt}

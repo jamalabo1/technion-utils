@@ -61,6 +61,14 @@
 }
 
 
+% this is for better grouping and layout
+\renewenvironment{subitem}{\item}{}
+\newenvironment{hwsubitem}{%
+  \item\ignorespaces
+}{%
+  \unskip
+}
+
 \makeatletter
 \newcommand{\currentcontext}{%
   \@ifundefined{c@subquestion}{%
@@ -86,7 +94,7 @@
     \refstepcounter{#2}%
     % Allows disabling the numbering and context by defining \disabletheoremnumbering
     \cindent[1]{#1#3%
-      \ifdefined\disabletheoremnumbering~\csname the#2\endcsname\else~\csname the#2\endcsname\space(\currentcontext)\fi}%
+      \ifdefined\disabletheoremnumbering~\csname the#2\endcsname\else~\currentcontext.\csname the#2\endcsname\fi}%
     \edef\@currentlabel{\currentcontext.\arabic{#2}}%
     \label{\currentcontext:#2:\arabic{#2}}%
   }{%
@@ -102,7 +110,7 @@
 
 \newtheoremenv{definition}{Definition}
 
-% \newtheoremenv{corollary}{Corollary}
+\newtheoremenv{corollary}{Corollary}
 
 % Usage with custom formatting:
 \newtheoremenv[\itshape\bfseries]{theorem}{Theorem}

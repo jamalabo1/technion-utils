@@ -6,9 +6,9 @@
 \usepackage{polyglossia}
 % Load font from relative path
 % \newfontfamily\hebrewfont[
-%   Path = ../fonts/static/,
-%   UprightFont = *-Regular.ttf,
-%   BoldFont = *-Bold.ttf
+%     Path = ../../fonts/static/,
+%     UprightFont = *-Regular.ttf,
+%     BoldFont = *-Bold.ttf
 % ]{NotoSansHebrew}
 
 
@@ -27,16 +27,17 @@
 \newcommand{\N}{\mathbb{N}}
 \newcommand{\Q}{\mathbb{Q}}
 \newcommand{\Rp}{\mathbb{R^+}}
-
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\I}{\mathbb{I}}
+\newcommand{\C}{\mathbb{C}}
 
 % functions operations
 \newcommand{\fn}[3][f]{#1\colon#2\to#3}
-\newcommand{\im}[1]{Im(#1)}
+\newcommand{\im}[1]{\text{Im}(#1)}
 
 \newcommand{\ceil}[1]{\lceil #1 \rceil}
 \newcommand{\floor}[1]{\lfloor #1 \rfloor}
-\newcommand{\F}{\mathbb{F}}
-\newcommand{\I}{\mathbb{I}}
+
 
 \newcommand{\MZ}[1]{\Z_{#1}^{\ti\\mes}}
 \newcommand{\abs}[1]{|#1|}
@@ -64,7 +65,7 @@
 
 \newenvironment{block}
 {\begin{flushleft}\setlength{\parskip}{0pt}\setlength{\parindent}{0pt}}
-        {\end{flushleft}}
+                {\end{flushleft}}
 
 % used for overset + \eqref to a given sign (for equalites mostly) (label, sign)
 \newcommand{\refsign}[2]{\overset{\eqref{#1}}{#2}}
@@ -78,8 +79,11 @@
 % % same as refsign, but with & for align
 % \newcommand{\alrefsign}[2]{\refsign{#1}{&#2}} 
 
-\newcommand{\toinf}[1]{#1\to\infty}
-\newcommand{\ninflim}{\lim_{\toinf{n}}}
+% limits
+\newcommand{\toinf}{\to\infty}
+\newcommand{\ninflim}{\lim_{n\toinf}}
+\newcommand{\convto}[1]{\xrightarrow{#1}}
+\newcommand{\convtod}[1]{\underset{#1}{\longrightarrow}}
 
 
 % add padding to forall
@@ -106,6 +110,14 @@
 
 % seperators
 \newcommand{\sep}{,\;}
+
+% sequences
+\newcommand{\cseq}[4]{ \set{#1}_{#2=#3}^{#4} } % custom sequence with every param
+\newcommand{\nseq}[2][n]{ \cseq{#2}{#1}{1}{\infty} } % infinity sequence
+\newcommand{\seq}[2][n]{  \nseq[#1]{#2_#1} } % full sequence from 1 to infty
+%  \cseq{#2_{#1}}{#1}{1}{\infty}
+\newcommand{\rseq}[2][n]{ \set{#2_{#1} } }  % notation relaxed sequence
+\newcommand{\fseq}[2][n] {  \cseq{#2_{k}}{k}{ 1 }{ #1 } } % finite sequence from 1 to n
 
 \DeclareOption{mathsets} {
 

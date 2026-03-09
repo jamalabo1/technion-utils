@@ -1,0 +1,17 @@
+\ProvidesPackage{helpers/complex}[Custom Complex analysis consepts]
+
+% redefine the i unit
+\renewcommand{\i}{{i\mkern1mu}}
+
+% basic complex numbers definitions
+\newcommand{\conjugate}[1]{\mkern 1.5mu\overline{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu}
+\newcommand{\conj}{\conjugate}
+
+% curves
+\newcommand{\ind}{\text{Ind}}
+
+% residue
+\newcommand{\res}[2][f]{\text{Res}(#1; #2)}
+
+% puncurated disc
+\newcommand{\punc}[1][z_0]{D_r(#1)\setminus\set{#1}}
