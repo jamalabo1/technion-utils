@@ -22,6 +22,13 @@
 \setlength{\cftsecnumwidth}{2em}                      % space for section numbers
 % Right align page numbers in ToC, section titles left-aligned
 \renewcommand{\cftsecafterpnum}{\cftparfillskip}
+% Subquestion ToC entries (subsection level)
+\renewcommand{\cftsubsecfont}{\normalfont}
+\renewcommand{\cftsubsecpagefont}{\normalfont}
+\setlength{\cftsubsecindent}{4em}
+\setlength{\cftbeforesubsecskip}{0.3em}
+\renewcommand{\cftsubsecleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftsubsecafterpnum}{\cftparfillskip}
 
 \newcommand{\authorname}{Author Name}
 \newcommand{\coursename}{Course Name}
@@ -51,8 +58,11 @@
 \newcounter{subquestion}[question]
 \renewcommand{\thesubquestion}{\thequestion.\alph{subquestion}}
 
-\newenvironment{subquestionenv}{%
+\newenvironment{subquestion}{%
+  \ifnum\value{subquestion}>0\newpage\fi%
   \refstepcounter{subquestion}%
+  \phantomsection%
+  \addcontentsline{toc}{subsection}{(\thesubquestion)}%
   \begingroup%
   \cindent\textbf{(\thesubquestion)}\hspace{0.5em}%
   \label{Q:\thesubquestion}%
