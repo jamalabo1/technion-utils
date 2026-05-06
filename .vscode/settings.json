@@ -19,7 +19,6 @@
                 "%DOC%"
             ],
             "env": {
-                // "TEXINPUTS": "..//:../..//:..//..//..//:"
                 "TEXINPUTS": ".//:%WORKSPACE_FOLDER%//:"
             }
         },
