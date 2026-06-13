@@ -1,0 +1,302 @@
+% Cosmetic/layout helpers for homework documents.
+\ProvidesPackage{helpers/homework-cosmetic}[Homework layout helpers]
+
+\RequirePackage{helpers/core}
+\RequirePackage{framed}
+\RequirePackage{tocloft}
+
+% ----CONTENTS PAGE----
+\newif\ifshowcontents
+\showcontentstrue % defaults to true
+\DeclareOption{nocontents}{\showcontentsfalse}
+\newif\ifshowsubquestiontitles
+\showsubquestiontitlestrue % defaults to true
+\DeclareOption{nosubquestiontitles}{\showsubquestiontitlesfalse}
+\newcommand{\disablesubquestiontitles}{\showsubquestiontitlesfalse}
+\newcommand{\enablesubquestiontitles}{\showsubquestiontitlestrue}
+\newif\ifnumericsubquestions
+\numericsubquestionsfalse % defaults to alphabetic subquestions
+\DeclareOption{numericsubquestions}{\numericsubquestionstrue}
+\DeclareOption{numericalsubquestions}{\numericsubquestionstrue}
+\newcommand{\enablenumericsubquestions}{\numericsubquestionstrue}
+\newcommand{\disablenumericsubquestions}{\numericsubquestionsfalse}
+\newif\ifsubquestionpages
+\subquestionpagesfalse % defaults to inline sub-subquestions
+\DeclareOption{subquestionpages}{\subquestionpagestrue}
+\DeclareOption{separatesubquestions}{\subquestionpagestrue}
+\DeclareOption{seperatesubquestions}{\subquestionpagestrue}
+\newcommand{\enablesubquestionpages}{\subquestionpagestrue}
+\newcommand{\disablesubquestionpages}{\subquestionpagesfalse}
+
+% Process selected options
+\ProcessOptions\relax
+
+\renewcommand{\contentsname}{\LARGE\centering \@title \vspace{1em}\par} % Enlarged and centered ToC title
+\setlength{\cftsecindent}{2em} % Add left padding to start of entries
+% Table of contents formatting (tocloft)
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}} % dot leaders
+\renewcommand{\cftsecfont}{\bfseries}                 % bold section titles
+\renewcommand{\cftsecpagefont}{\bfseries}             % bold page numbers
+\setlength{\cftbeforesecskip}{1.5em}                  % spacing between entries
+% \setlength{\cftsecindent}{6pt}                        % no indentation (now set above)
+\setlength{\cftsecnumwidth}{2em}                      % space for section numbers
+% Right align page numbers in ToC, section titles left-aligned
+\renewcommand{\cftsecafterpnum}{\cftparfillskip}
+% Subquestion ToC entries (subsection level)
+\renewcommand{\cftsubsecfont}{\normalfont}
+\renewcommand{\cftsubsecpagefont}{\normalfont}
+\setlength{\cftsubsecindent}{4em}
+\setlength{\cftbeforesubsecskip}{0.3em}
+\renewcommand{\cftsubsecleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftsubsecafterpnum}{\cftparfillskip}
+% Sub-subquestion ToC entries (subsubsection level)
+\renewcommand{\cftsubsubsecfont}{\normalfont}
+\renewcommand{\cftsubsubsecpagefont}{\normalfont}
+\setlength{\cftsubsubsecindent}{6em}
+\setlength{\cftbeforesubsubsecskip}{0.2em}
+\renewcommand{\cftsubsubsecleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftsubsubsecafterpnum}{\cftparfillskip}
+
+\newcommand{\authorname}{Author Name}
+\newcommand{\coursenumber}{0000000}
+\newcommand{\coursetitle}{Course Title}
+\newcommand{\coursename}{\coursenumber{} - \coursetitle{}}
+
+\newcommand{\hwnum}[1]{\title{\coursetitle{} - Homework #1}}
+
+\newcounter{question}
+\renewcommand{\theequation}{\thequestion.\arabic{equation}}
+
+\newcommand{\cindent}[1][1.5]{\par\noindent\hspace*{-#1em}}
+
+\newenvironment{question}{%
+  \newpage
+  \refstepcounter{question}%
+  \setcounter{equation}{0}%
+  \phantomsection%
+  \addcontentsline{toc}{section}{Question \thequestion}%
+  \ifsubquestionpages%
+    \global\homework@questionheaderpendingtrue%
+  \else%
+    \section*{\cindent Question \thequestion}
+    \vspace{-1.5em}%
+    \cindent\rule{\textwidth}{0.4pt}\vspace{1em}%
+  \fi%
+  \label{Q:\thequestion}%
+  \begin{block}%
+    }{%
+  \end{block}%
+}
+
+\newcounter{subquestion}[question]
+\renewcommand{\thesubquestion}{%
+  \thequestion.%
+  \ifnumericsubquestions\arabic{subquestion}\else\alph{subquestion}\fi%
+}
+
+\newcounter{subsubquestion}[subquestion]
+\renewcommand{\thesubsubquestion}{%
+  \thesubquestion.%
+  \ifnumericsubquestions\arabic{subsubquestion}\else\roman{subsubquestion}\fi%
+}
+
+\newif\ifshowsubquestiontitle
+\makeatletter
+\newcount\homework@subquestiondepth
+\homework@subquestiondepth=0
+\newif\ifhomework@subsubquestionactive
+\newif\ifhomework@questionheaderpending
+\newif\ifhomework@subquestionheaderpending
+
+\newcommand{\homework@headerbar}{%
+  \par\noindent\makebox[0pt][l]{%
+    \hspace*{\dimexpr -1in-\hoffset-\ifodd\value{page}\oddsidemargin\else\evensidemargin\fi\relax}%
+    \rule{\paperwidth}{0.4pt}%
+  }\par\vspace{1em}%
+}
+
+\newcommand{\homework@questionpageheader}{%
+  \par\noindent{\small\bfseries Question \thequestion}\par%
+  \vspace{-0.7em}%
+  \homework@headerbar%
+}
+
+\newcommand{\homework@pageheadertwo}[2]{%
+  \makebox[\textwidth]{%
+    \makebox[0pt][l]{#1}%
+    \hfill%
+    \makebox[0pt][r]{#2}%
+  }%
+}
+
+\newcommand{\homework@pageheaderthree}[3]{%
+  \makebox[\textwidth]{%
+    \makebox[0pt][l]{#1}%
+    \hfill%
+    \makebox[0pt][c]{#2}%
+    \hfill%
+    \makebox[0pt][r]{#3}%
+  }%
+}
+
+\newcommand{\homework@subquestionpageheader}{%
+  \par\noindent{\small\bfseries%
+    \homework@pageheadertwo{Question \thequestion}{\thesubquestion}%
+  }\par%
+  \vspace{-0.7em}%
+  \homework@headerbar%
+}
+
+\newcommand{\homework@subsubquestionpageheader}{%
+  \par\noindent{\small\bfseries%
+    \homework@pageheaderthree{Question \thequestion}{\thesubquestion}{\thesubsubquestion}%
+  }\par%
+  \vspace{-0.7em}%
+  \homework@headerbar%
+}
+
+\newcommand{\homework@flushpendingpageheader}{%
+  \ifsubquestionpages%
+    \ifhomework@subquestionheaderpending%
+      \homework@subquestionpageheader%
+      \global\homework@subquestionheaderpendingfalse%
+    \else%
+      \ifhomework@questionheaderpending%
+        \homework@questionpageheader%
+        \global\homework@questionheaderpendingfalse%
+      \fi%
+    \fi%
+  \fi%
+}
+
+\newcommand{\homework@begintopsubquestion}[1]{%
+  \ifnum\value{subquestion}>0\newpage\fi%
+  \refstepcounter{subquestion}%
+  \phantomsection%
+  \addcontentsline{toc}{subsection}{(\thesubquestion)}%
+  \begingroup%
+  \global\advance\homework@subquestiondepth by 1%
+  \showsubquestiontitletrue%
+  \def\subquestiontitleoption{#1}%
+  \def\subquestionnotitleoption{notitle}%
+  \ifx\subquestiontitleoption\subquestionnotitleoption%
+    \showsubquestiontitlefalse%
+  \fi%
+  \ifshowsubquestiontitles\else%
+    \showsubquestiontitlefalse%
+  \fi%
+  \ifsubquestionpages%
+    \global\homework@questionheaderpendingfalse%
+    \global\homework@subquestionheaderpendingtrue%
+  \else\ifshowsubquestiontitle%
+      \cindent\textbf{(\thesubquestion)}\hspace{0.5em}%
+    \fi\fi%
+  \label{Q:\thesubquestion}%
+}
+
+\newcommand{\homework@beginsubsubquestion}[1]{%
+  \ifnum\value{subquestion}=0 %
+    \PackageError{homework}{`subsubquestion' must be used inside `subquestion'}{}%
+  \fi%
+  \ifsubquestionpages%
+    \ifhomework@subquestionheaderpending%
+      \global\homework@subquestionheaderpendingfalse%
+    \else%
+      \newpage%
+    \fi%
+  \fi%
+  \refstepcounter{subsubquestion}%
+  \phantomsection%
+  \addcontentsline{toc}{subsubsection}{(\thesubsubquestion)}%
+  \begingroup%
+  \global\advance\homework@subquestiondepth by 1%
+  \homework@subsubquestionactivetrue%
+  \showsubquestiontitletrue%
+  \def\subquestiontitleoption{#1}%
+  \def\subquestionnotitleoption{notitle}%
+  \ifx\subquestiontitleoption\subquestionnotitleoption%
+    \showsubquestiontitlefalse%
+  \fi%
+  \ifshowsubquestiontitles\else%
+    \showsubquestiontitlefalse%
+  \fi%
+  \ifsubquestionpages%
+    \global\homework@questionheaderpendingfalse%
+    \homework@subsubquestionpageheader%
+  \else\ifshowsubquestiontitle%
+      \par\noindent\hspace*{-0.5em}\textbf{(\thesubsubquestion)}\hspace{0.5em}%
+    \fi\fi%
+  \label{Q:\thesubsubquestion}%
+}
+
+\newcommand{\homework@endsubquestion}{%
+  \par%
+  \global\advance\homework@subquestiondepth by -1%
+  \endgroup%
+}
+
+\NewDocumentEnvironment{subquestion}{O{}}{%
+  \ifnum\homework@subquestiondepth>0 %
+    \homework@beginsubsubquestion{#1}%
+  \else%
+    \homework@begintopsubquestion{#1}%
+  \fi%
+}{%
+  \homework@endsubquestion%
+}
+
+\NewDocumentEnvironment{subsubquestion}{O{}}{%
+  \homework@beginsubsubquestion{#1}%
+}{%
+  \homework@endsubquestion%
+}
+\makeatother
+
+% this is for better grouping and layout
+\renewenvironment{subitem}{\item}{}
+\newenvironment{hwsubitem}{%
+  \item\ignorespaces
+}{%
+  \unskip
+}
+
+\makeatletter
+\newcommand{\currentcontext}{%
+  \ifhomework@subsubquestionactive%
+    \thesubsubquestion%
+  \else%
+    \ifnum\value{subquestion}>0 %
+      \thesubquestion%
+    \else%
+      \thequestion%
+    \fi%
+  \fi%
+}
+\makeatother
+
+\newcommand{\frontpage}{
+  \tableofcontents
+  \vfill
+  \vspace{2em}
+  \noindent
+  \begin{center}
+    \begin{minipage}{0.6\textwidth}
+      \begin{framed}
+        \begin{center}
+          \textbf{Author:} \authorname \\
+          \textbf{Course:} \coursename \\
+        \end{center}
+      \end{framed}
+    \end{minipage}
+  \end{center}
+  \vspace{1em}
+  \clearpage
+}
+
+\AtBeginDocument{%
+  \ifshowcontents
+    \frontpage
+  \fi
+  \large
+  \linespread{2} %
+}

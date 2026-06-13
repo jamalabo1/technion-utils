@@ -2,6 +2,7 @@
 
 \usepackage{listings}
 \usepackage{color}
+\usepackage{xparse}
 \usepackage{amsmath, amssymb, algorithmicx, algpseudocode, listings}
 \usepackage{tikz}
 
@@ -27,6 +28,18 @@
 }
 
 \usetikzlibrary{arrows.meta}
+
+
+% graphs
+\newcommand{\graphdef}{G = (V,E)}
+\newcommand{\din}{d_{\text{in}}}
+\newcommand{\dout}{d_{\text{out}}}
+\newcommand{\gwedge}[2][G']{#1 = (V, E\ssminus{#2})}
+
+
+% recurrence relations
+\NewDocumentCommand{\ff}{O{n} O{2}}{\floor{\tfrac{#1}{#2}}}
+\NewDocumentCommand{\cf}{O{n} O{2}}{\ceil{\tfrac{#1}{#2}}}
 
 
 % \newenvironment{codeblock}

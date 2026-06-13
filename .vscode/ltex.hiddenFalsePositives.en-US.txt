@@ -1,0 +1,2 @@
+{"rule":"CAPITALIZATION_NNP_DERIVED","sentence":"^\\Qthe group \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q is abelian since \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q is isomorphism, and \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q is abelian, then by lemma lemma:1, \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q is also abelian.\\E$"}
+{"rule":"CAPITALIZATION_NNP_DERIVED","sentence":"^\\Qthen: \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q is abelian \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q are abelian\\E$"}

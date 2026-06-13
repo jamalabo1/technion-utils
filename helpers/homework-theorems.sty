@@ -1,0 +1,116 @@
+% Theorem, proof, and reference helpers for homework documents.
+\ProvidesPackage{helpers/homework-theorems}[Homework theorem and proof helpers]
+
+\RequirePackage{helpers/homework-cosmetic}
+
+\makeatletter
+\newcommand{\newtheoremenv}[3][\bfseries]{%
+  % #1 = formatting (optional, default \bfseries)
+  % #2 = environment name
+  % #3 = display name
+  \newcounter{#2}[subquestion]%
+  \@addtoreset{#2}{subsubquestion}%
+  \expandafter\renewcommand\csname the#2\endcsname{\arabic{#2}}%
+  \newenvironment{#2}{%
+    \homework@flushpendingpageheader%
+    \refstepcounter{#2}%
+    % Allows disabling the numbering and context by defining \disabletheoremnumbering
+    \cindent[1]{#1#3%
+      \ifdefined\disabletheoremnumbering~\csname the#2\endcsname\else~\currentcontext.\csname the#2\endcsname\fi\quad}%
+    \edef\@currentlabel{\currentcontext.\arabic{#2}}%
+    \label{\currentcontext:#2:\arabic{#2}}%
+  }{%
+    \par%
+  }%
+}
+
+% Usage with default formatting:
+\newtheoremenv{lemma}{Lemma}
+%
+\newtheoremenv{claim}{Claim}
+%
+\newtheoremenv{definition}{Definition}
+%
+\newtheoremenv{corollary}{Corollary}
+%
+\newtheoremenv{exercise}{Exercise}
+%
+% Usage with custom formatting:
+\newtheoremenv[\itshape\bfseries]{theorem}{Theorem}
+
+\makeatother
+
+\makeatletter
+\renewenvironment{proof}[1][\proofname]{%
+  \homework@flushpendingpageheader%
+  \par\pushQED{\qed}%
+  \normalfont \topsep6\p@\@plus6\p@\relax%
+  \trivlist%
+  \item[\hskip\labelsep\bfseries\itshape #1\@addpunct{.}]\ignorespaces%
+}{%
+  \popQED\endtrivlist\@endpefalse%
+}
+\makeatother
+
+\makeatletter
+\@ifundefined{solution}{%
+  \newenvironment{solution}{\begin{proof}[Solution]}{\end{proof}}%
+}{}
+\makeatother
+
+% for local ref's (here l local)
+\newcommand{\lref}[1]{%
+  \IfRefUndefinedExpandable{\currentcontext:#1}%
+  {\IfRefUndefinedExpandable{#1}%
+    {\textbf{??#1??}}%
+    {\eqref{#1}}%
+  }%
+  {\eqref{\currentcontext:#1}}%
+}
+
+% --- Induction proof environments ---
+
+\newif\ifinductionenv
+\inductionenvfalse
+
+\newenvironment{induction}[1]{%
+  \inductionenvtrue%
+  \begin{list}{}{
+      \leftmargin=1.5em\rightmargin=0em
+      proof by induction on {#1}.
+    }%
+    \item\relax%
+          }{%
+  \end{list}%
+  \inductionenvfalse%
+}
+
+\newenvironment{sinduction}[1]{%
+  \inductionenvtrue%
+  \begin{list}{}{
+      \leftmargin=1.5em\rightmargin=0em
+      proof by strong induction on {#1}.
+    }%
+    \item\relax%
+          }{%
+  \end{list}%
+  \inductionenvfalse%
+}
+
+\newenvironment{base}{%
+  \ifinductionenv\else%
+    \PackageError{homework}{`base' must be used inside `induction'}{}%
+  \fi%
+  \par\noindent\textbf{Base Case.}\enspace\ignorespaces%
+}{%
+  \par%
+}
+
+\newenvironment{general}{%
+  \ifinductionenv\else%
+    \PackageError{homework}{`general' must be used inside `induction'}{}%
+  \fi%
+  \par\noindent\textbf{Inductive Step.}\enspace\ignorespaces%
+}{%
+  \par%
+}
