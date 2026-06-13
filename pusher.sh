@@ -8,50 +8,45 @@ REMOTE_BRANCH="latex"                # name of the branch on the remote
 PATHS=(.vscode helpers fonts .gitignore pusher.sh)   # files/folders to include
 # ——————————————————————————————————————————————————————→
 
-# 1. Stash any local changes (tracked + untracked)
-stash_ref=""
-if ! git diff-index --quiet HEAD --; then
-  stash_ref=$(git stash push -u -m "pre-${LOCAL_BRANCH}-stash")
-fi
-
-# 2. Remember current branch
-ORIGINAL_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+# 1. Build the public branch in a temporary worktree so the notes tree never
+#    gets replaced by the small utils branch.
+SOURCE_REF=$(git rev-parse --verify HEAD)
+WORKTREE=$(mktemp -d "${TMPDIR:-/tmp}/${LOCAL_BRANCH}.XXXXXX")
 
 cleanup() {
-  git checkout "$ORIGINAL_BRANCH" > /dev/null 2>&1
-  if [ -n "$stash_ref" ]; then
-    git stash pop > /dev/null 2>&1 || true
-  fi
+  git worktree remove --force "$WORKTREE" > /dev/null 2>&1 || true
 }
 trap cleanup EXIT
 
-# 3. Switch to (or create) the local target branch
+# 2. Check out (or create) the local target branch in the temporary worktree.
 JUST_CREATED_BRANCH=0
 if git show-ref --quiet refs/heads/"$LOCAL_BRANCH"; then
-  git checkout "$LOCAL_BRANCH" > /dev/null 2>&1
+  git worktree add --quiet "$WORKTREE" "$LOCAL_BRANCH" > /dev/null 2>&1
 else
-  git checkout --orphan "$LOCAL_BRANCH" > /dev/null 2>&1
-  git rm -rf . > /dev/null 2>&1
+  git worktree add --detach --quiet "$WORKTREE" "$SOURCE_REF" > /dev/null 2>&1
+  git -C "$WORKTREE" checkout --orphan "$LOCAL_BRANCH" > /dev/null 2>&1
+  git -C "$WORKTREE" rm -rf . > /dev/null 2>&1 || true
   JUST_CREATED_BRANCH=1
 fi
 
-# 4. Pull in only the specified paths from the original branch
-git checkout "$ORIGINAL_BRANCH" -- "${PATHS[@]}" > /dev/null 2>&1
+# 3. Replace the target branch contents with only the specified paths.
+git -C "$WORKTREE" rm -rf --ignore-unmatch . > /dev/null 2>&1
+git -C "$WORKTREE" checkout "$SOURCE_REF" -- "${PATHS[@]}" > /dev/null 2>&1
+git -C "$WORKTREE" add -A > /dev/null 2>&1
 
-# 5. Commit & push if there are changes
-if ! git diff-index --quiet HEAD --; then
-  git add "${PATHS[@]}" > /dev/null 2>&1
-  git commit --quiet -m "Automated $LOCAL_BRANCH commit $REMOTE_BRANCH @ $(date +%Y-%m-%d)"
+# 4. Commit & push if there are changes.
+if ! git -C "$WORKTREE" diff --cached --quiet; then
+  git -C "$WORKTREE" commit --quiet -m "Automated $LOCAL_BRANCH commit $REMOTE_BRANCH @ $(date +%Y-%m-%d)"
   if [ "$JUST_CREATED_BRANCH" -eq 1 ]; then
-    git push --quiet --force "$REMOTE_NAME" "$LOCAL_BRANCH":"$REMOTE_BRANCH" > /dev/null 2>&1
+    git -C "$WORKTREE" push --quiet --force "$REMOTE_NAME" "$LOCAL_BRANCH":"$REMOTE_BRANCH" > /dev/null 2>&1
   else
-    git push --quiet "$REMOTE_NAME" "$LOCAL_BRANCH":"$REMOTE_BRANCH" > /dev/null 2>&1
+    git -C "$WORKTREE" push --quiet "$REMOTE_NAME" "$LOCAL_BRANCH":"$REMOTE_BRANCH" > /dev/null 2>&1
   fi
 else
   echo "No changes in ${PATHS[*]}; nothing to commit."
 fi
 
-# 6. Restore original state
+# 5. Remove the temporary worktree.
 trap - EXIT
 cleanup
 
