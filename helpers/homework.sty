@@ -1,6 +1,13 @@
 % for homeworks
 \ProvidesPackage{helpers/homework}[Custom Homework helpers]
 
+\DeclareOption{notheoremnumbers}{\PassOptionsToPackage{\CurrentOption}{helpers/homework-theorems}}
+\DeclareOption{notheoremnumbering}{\PassOptionsToPackage{\CurrentOption}{helpers/homework-theorems}}
+\DeclareOption{disabletheoremnumbering}{\PassOptionsToPackage{\CurrentOption}{helpers/homework-theorems}}
+\DeclareOption{localtheoremnumbers}{\PassOptionsToPackage{\CurrentOption}{helpers/homework-theorems}}
+\DeclareOption{localtheoremnumbering}{\PassOptionsToPackage{\CurrentOption}{helpers/homework-theorems}}
+\DeclareOption{partialtheoremnumbers}{\PassOptionsToPackage{\CurrentOption}{helpers/homework-theorems}}
+\DeclareOption{partialtheoremnumbering}{\PassOptionsToPackage{\CurrentOption}{helpers/homework-theorems}}
 \DeclareOption*{\PassOptionsToPackage{\CurrentOption}{helpers/homework-cosmetic}}
 \ProcessOptions\relax
 

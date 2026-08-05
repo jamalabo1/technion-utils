@@ -4,6 +4,7 @@
 \RequirePackage{helpers/core}
 \RequirePackage{framed}
 \RequirePackage{tocloft}
+\RequirePackage{keyval}
 
 % ----CONTENTS PAGE----
 \newif\ifshowcontents
@@ -27,6 +28,21 @@
 \DeclareOption{seperatesubquestions}{\subquestionpagestrue}
 \newcommand{\enablesubquestionpages}{\subquestionpagestrue}
 \newcommand{\disablesubquestionpages}{\subquestionpagesfalse}
+\newif\ifshowpartheadings
+\showpartheadingsfalse % defaults to hiding part headings in the document body
+\DeclareOption{showpartheadings}{\showpartheadingstrue}
+\DeclareOption{partheadings}{\showpartheadingstrue}
+\DeclareOption{hidepartheadings}{\showpartheadingsfalse}
+\DeclareOption{nopartheadings}{\showpartheadingsfalse}
+\newcommand{\enablepartheadings}{\showpartheadingstrue}
+\newcommand{\disablepartheadings}{\showpartheadingsfalse}
+\newif\ifcontextquestionnumbers
+\contextquestionnumberstrue % defaults to part.question inside parts
+\DeclareOption{contextquestionnumbers}{\contextquestionnumberstrue}
+\DeclareOption{contextualquestionnumbers}{\contextquestionnumberstrue}
+\DeclareOption{localquestionnumbers}{\contextquestionnumbersfalse}
+\newcommand{\enablecontextquestionnumbers}{\contextquestionnumberstrue}
+\newcommand{\disablecontextquestionnumbers}{\contextquestionnumbersfalse}
 
 % Process selected options
 \ProcessOptions\relax
@@ -56,6 +72,13 @@
 \setlength{\cftbeforesubsubsecskip}{0.2em}
 \renewcommand{\cftsubsubsecleader}{\cftdotfill{\cftdotsep}}
 \renewcommand{\cftsubsubsecafterpnum}{\cftparfillskip}
+% Sub-sub-subquestion ToC entries (paragraph level when questions are nested under parts)
+\renewcommand{\cftparafont}{\normalfont}
+\renewcommand{\cftparapagefont}{\normalfont}
+\setlength{\cftparaindent}{8em}
+\setlength{\cftbeforeparaskip}{0.2em}
+\renewcommand{\cftparaleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftparaafterpnum}{\cftparfillskip}
 
 \newcommand{\authorname}{Author Name}
 \newcommand{\coursenumber}{0000000}
@@ -63,40 +86,253 @@
 \newcommand{\coursename}{\coursenumber{} - \coursetitle{}}
 
 \newcommand{\hwnum}[1]{\title{\coursetitle{} - Homework #1}}
+\newcommand{\homeworkpartname}{Part}
+\newcommand{\homeworkquestionname}{Question}
+\newcommand{\homeworkparttitlesep}{: }
+\newcommand{\homeworkquestioncontextsep}{.}
+\newcommand{\setpartindexname}[1]{\renewcommand{\homeworkpartname}{#1}}
+\newcommand{\setquestionindexname}[1]{\renewcommand{\homeworkquestionname}{#1}}
+\let\setpartindexprefix\setpartindexname
+\let\setquestionindexprefix\setquestionindexname
+\newcommand{\setparttitlesep}[1]{\renewcommand{\homeworkparttitlesep}{#1}}
+\newcommand{\setquestioncontextsep}[1]{\renewcommand{\homeworkquestioncontextsep}{#1}}
+\makeatletter
+\newcommand{\homework@setquestionindex}[1]{%
+  \setcounter{question}{#1}%
+  \addtocounter{question}{-1}%
+}
+\newcommand{\homework@setquestionnumberingmode}[1]{%
+  \def\homework@numberingoption{#1}%
+  \def\homework@contextoption{context}%
+  \def\homework@contextualoption{contextual}%
+  \def\homework@localoption{local}%
+  \def\homework@indexoption{index}%
+  \ifx\homework@numberingoption\homework@contextoption%
+    \contextquestionnumberstrue%
+  \else\ifx\homework@numberingoption\homework@contextualoption%
+    \contextquestionnumberstrue%
+  \else\ifx\homework@numberingoption\homework@localoption%
+    \contextquestionnumbersfalse%
+  \else\ifx\homework@numberingoption\homework@indexoption%
+    \contextquestionnumbersfalse%
+  \else%
+    \PackageError{homework}{Unknown question numbering mode `#1'}%
+      {Use `context' for part.question numbering or `local' for question-only numbering.}%
+  \fi\fi\fi\fi%
+}
+\newcommand{\homework@setquestionnumbering}[1]{%
+  \def\homework@numberingoption{#1}%
+  \def\homework@contextoption{context}%
+  \def\homework@contextualoption{contextual}%
+  \def\homework@localoption{local}%
+  \def\homework@indexoption{index}%
+  \ifx\homework@numberingoption\homework@contextoption%
+    \contextquestionnumberstrue%
+  \else\ifx\homework@numberingoption\homework@contextualoption%
+    \contextquestionnumberstrue%
+  \else\ifx\homework@numberingoption\homework@localoption%
+    \contextquestionnumbersfalse%
+  \else\ifx\homework@numberingoption\homework@indexoption%
+    \contextquestionnumbersfalse%
+  \else%
+    \homework@setquestionindex{#1}%
+  \fi\fi\fi\fi%
+}
+\define@key{homeworkpart}{part-name}{\renewcommand{\homeworkpartname}{#1}}
+\define@key{homeworkpart}{part-prefix}{\renewcommand{\homeworkpartname}{#1}}
+\define@key{homeworkpart}{index-name}{\renewcommand{\homeworkpartname}{#1}}
+\define@key{homeworkpart}{index-prefix}{\renewcommand{\homeworkpartname}{#1}}
+\define@key{homeworkpart}{name}{\renewcommand{\homeworkpartname}{#1}}
+\define@key{homeworkpart}{prefix}{\renewcommand{\homeworkpartname}{#1}}
+\define@key{homeworkpart}{question-name}{\renewcommand{\homeworkquestionname}{#1}}
+\define@key{homeworkpart}{question-prefix}{\renewcommand{\homeworkquestionname}{#1}}
+\define@key{homeworkpart}{title-sep}{\renewcommand{\homeworkparttitlesep}{#1}}
+\define@key{homeworkpart}{part-title-sep}{\renewcommand{\homeworkparttitlesep}{#1}}
+\define@key{homeworkpart}{question-sep}{\renewcommand{\homeworkquestioncontextsep}{#1}}
+\define@key{homeworkpart}{context-sep}{\renewcommand{\homeworkquestioncontextsep}{#1}}
+\define@key{homeworkpart}{question-context-sep}{\renewcommand{\homeworkquestioncontextsep}{#1}}
+\define@key{homeworkpart}{question-numbering}{\homework@setquestionnumberingmode{#1}}
+\define@key{homeworkpart}{numbering}{\homework@setquestionnumberingmode{#1}}
+\define@key{homeworkquestion}{question-name}{\renewcommand{\homeworkquestionname}{#1}}
+\define@key{homeworkquestion}{question-prefix}{\renewcommand{\homeworkquestionname}{#1}}
+\define@key{homeworkquestion}{name}{\renewcommand{\homeworkquestionname}{#1}}
+\define@key{homeworkquestion}{prefix}{\renewcommand{\homeworkquestionname}{#1}}
+\define@key{homeworkquestion}{question-sep}{\renewcommand{\homeworkquestioncontextsep}{#1}}
+\define@key{homeworkquestion}{context-sep}{\renewcommand{\homeworkquestioncontextsep}{#1}}
+\define@key{homeworkquestion}{question-context-sep}{\renewcommand{\homeworkquestioncontextsep}{#1}}
+\define@key{homeworkquestion}{question-numbering}{\homework@setquestionnumbering{#1}}
+\define@key{homeworkquestion}{numbering}{\homework@setquestionnumbering{#1}}
+\define@key{homeworkquestion}{question-index}{\homework@setquestionindex{#1}}
+\define@key{homeworkquestion}{question-number}{\homework@setquestionindex{#1}}
+\define@key{homeworkquestion}{index}{\homework@setquestionindex{#1}}
+\define@key{homeworkquestion}{number}{\homework@setquestionindex{#1}}
+\newcommand{\homeworkpartentry}[2]{%
+  \homeworkpartname~#1%
+  \if\relax\detokenize{#2}\relax\else%
+    \homeworkparttitlesep#2%
+  \fi%
+}
+\makeatother
 
-\newcounter{question}
+\makeatletter
+\let\homework@latexpart\part
+\let\part\relax
+\newif\ifhomework@partactive
+\newif\ifhomework@partfirstquestion
+\newcommand{\homework@currentpartheading}{}
+\newcounter{homeworkpart}
+\renewcommand{\thehomeworkpart}{\arabic{homeworkpart}}
+\providecommand{\theHhomeworkpart}{}
+\renewcommand{\theHhomeworkpart}{homeworkpart.\arabic{homeworkpart}}
+\newcounter{question}[homeworkpart]
+\renewcommand{\thequestion}{%
+  \ifhomework@partactive%
+    \ifcontextquestionnumbers%
+      \thehomeworkpart\homeworkquestioncontextsep\arabic{question}%
+    \else%
+      \arabic{question}%
+    \fi%
+  \else%
+    \arabic{question}%
+  \fi%
+}
+\providecommand{\theHquestion}{}
+\renewcommand{\theHquestion}{%
+  \ifhomework@partactive%
+    homeworkpart.\arabic{homeworkpart}.question.\arabic{question}%
+  \else%
+    question.\arabic{question}%
+  \fi%
+}
 \renewcommand{\theequation}{\thequestion.\arabic{equation}}
+\providecommand{\theHequation}{}
+\renewcommand{\theHequation}{\theHquestion.equation.\arabic{equation}}
+\newcommand{\homework@questionlabelnumber}{%
+  \ifhomework@partactive%
+    \thehomeworkpart.\arabic{question}%
+  \else%
+    \arabic{question}%
+  \fi%
+}
+\newcommand{\homework@subquestionlabelnumber}{%
+  \homework@questionlabelnumber.%
+  \ifnumericsubquestions\arabic{subquestion}\else\alph{subquestion}\fi%
+}
+\newcommand{\homework@subsubquestionlabelnumber}{%
+  \homework@subquestionlabelnumber.%
+  \ifnumericsubquestions\arabic{subsubquestion}\else\roman{subsubquestion}\fi%
+}
+\NewDocumentEnvironment{part}{O{} O{}}{%
+  \begingroup%
+  \newpage
+  \setkeys{homeworkpart}{#2}%
+  \refstepcounter{homeworkpart}%
+  \setcounter{question}{0}%
+  \global\homework@partactivetrue%
+  \global\homework@partfirstquestiontrue%
+  \phantomsection%
+  \def\homework@parttitle{#1}%
+  \def\homework@emptyparttitle{}%
+  \ifx\homework@parttitle\homework@emptyparttitle%
+    \gdef\homework@currentpartheading{\homeworkpartname~\thehomeworkpart}%
+    \addcontentsline{toc}{section}{\homeworkpartentry{\thehomeworkpart}{}}%
+  \else%
+    \gdef\homework@currentpartheading{\homeworkpartname~\thehomeworkpart\homeworkparttitlesep#1}%
+    \addcontentsline{toc}{section}{\homeworkpartentry{\thehomeworkpart}{#1}}%
+  \fi%
+  \label{Part:\thehomeworkpart}%
+}{%
+  \global\homework@partactivefalse%
+  \global\homework@partfirstquestionfalse%
+  \gdef\homework@currentpartheading{}%
+  \endgroup%
+}
+\makeatother
 
 \newcommand{\cindent}[1][1.5]{\par\noindent\hspace*{-#1em}}
 
-\newenvironment{question}{%
-  \newpage
+\makeatletter
+\newcommand{\homework@maybeprintpartheading}{%
+  \ifshowpartheadings%
+    \ifhomework@partactive%
+      \section*{\cindent \homework@currentpartheading}%
+      \vspace{-1.5em}%
+    \fi%
+  \fi%
+}
+
+\newcommand{\homework@addquestiontoc}{%
+  \ifhomework@partactive%
+    \addcontentsline{toc}{subsection}{\homeworkquestionname~\thequestion}%
+  \else%
+    \addcontentsline{toc}{section}{\homeworkquestionname~\thequestion}%
+  \fi%
+}
+
+\newcommand{\homework@addsubquestiontoc}{%
+  \ifhomework@partactive%
+    \addcontentsline{toc}{subsubsection}{(\thesubquestion)}%
+  \else%
+    \addcontentsline{toc}{subsection}{(\thesubquestion)}%
+  \fi%
+}
+
+\newcommand{\homework@addsubsubquestiontoc}{%
+  \ifhomework@partactive%
+    \addcontentsline{toc}{paragraph}{(\thesubsubquestion)}%
+  \else%
+    \addcontentsline{toc}{subsubsection}{(\thesubsubquestion)}%
+  \fi%
+}
+
+\NewDocumentEnvironment{question}{O{}}{%
+  \begingroup%
+  \setkeys{homeworkquestion}{#1}%
+  \ifhomework@partfirstquestion%
+    \global\homework@partfirstquestionfalse%
+  \else%
+    \newpage%
+  \fi%
   \refstepcounter{question}%
   \setcounter{equation}{0}%
+  \global\homework@questioncontextheaderfalse%
   \phantomsection%
-  \addcontentsline{toc}{section}{Question \thequestion}%
+  \homework@addquestiontoc%
   \ifsubquestionpages%
     \global\homework@questionheaderpendingtrue%
   \else%
-    \section*{\cindent Question \thequestion}
+    \homework@maybeprintpartheading%
+    \section*{\cindent \homeworkquestionname~\thequestion}
     \vspace{-1.5em}%
     \cindent\rule{\textwidth}{0.4pt}\vspace{1em}%
   \fi%
-  \label{Q:\thequestion}%
+  \label{Q:\homework@questionlabelnumber}%
   \begin{block}%
-    }{%
+}{%
   \end{block}%
+  \endgroup%
 }
+\makeatother
 
 \newcounter{subquestion}[question]
 \renewcommand{\thesubquestion}{%
   \thequestion.%
   \ifnumericsubquestions\arabic{subquestion}\else\alph{subquestion}\fi%
 }
+\providecommand{\theHsubquestion}{}
+\renewcommand{\theHsubquestion}{%
+  \theHquestion.subquestion.%
+  \ifnumericsubquestions\arabic{subquestion}\else\alph{subquestion}\fi%
+}
 
 \newcounter{subsubquestion}[subquestion]
 \renewcommand{\thesubsubquestion}{%
   \thesubquestion.%
+  \ifnumericsubquestions\arabic{subsubquestion}\else\roman{subsubquestion}\fi%
+}
+\providecommand{\theHsubsubquestion}{}
+\renewcommand{\theHsubsubquestion}{%
+  \theHsubquestion.subsubquestion.%
   \ifnumericsubquestions\arabic{subsubquestion}\else\roman{subsubquestion}\fi%
 }
 
@@ -107,6 +343,7 @@
 \newif\ifhomework@subsubquestionactive
 \newif\ifhomework@questionheaderpending
 \newif\ifhomework@subquestionheaderpending
+\newif\ifhomework@questioncontextheader
 
 \newcommand{\homework@headerbar}{%
   \par\noindent\makebox[0pt][l]{%
@@ -116,7 +353,13 @@
 }
 
 \newcommand{\homework@questionpageheader}{%
-  \par\noindent{\small\bfseries Question \thequestion}\par%
+  \ifshowpartheadings%
+    \ifhomework@partactive%
+      \par\noindent{\small\bfseries \homework@currentpartheading}\par%
+      \vspace{-0.4em}%
+    \fi%
+  \fi%
+  \par\noindent{\small\bfseries \homeworkquestionname~\thequestion}\par%
   \vspace{-0.7em}%
   \homework@headerbar%
 }
@@ -140,16 +383,28 @@
 }
 
 \newcommand{\homework@subquestionpageheader}{%
+  \ifshowpartheadings%
+    \ifhomework@partactive%
+      \par\noindent{\small\bfseries \homework@currentpartheading}\par%
+      \vspace{-0.4em}%
+    \fi%
+  \fi%
   \par\noindent{\small\bfseries%
-    \homework@pageheadertwo{Question \thequestion}{\thesubquestion}%
+    \homework@pageheadertwo{\homeworkquestionname~\thequestion}{\thesubquestion}%
   }\par%
   \vspace{-0.7em}%
   \homework@headerbar%
 }
 
 \newcommand{\homework@subsubquestionpageheader}{%
+  \ifshowpartheadings%
+    \ifhomework@partactive%
+      \par\noindent{\small\bfseries \homework@currentpartheading}\par%
+      \vspace{-0.4em}%
+    \fi%
+  \fi%
   \par\noindent{\small\bfseries%
-    \homework@pageheaderthree{Question \thequestion}{\thesubquestion}{\thesubsubquestion}%
+    \homework@pageheaderthree{\homeworkquestionname~\thequestion}{\thesubquestion}{\thesubsubquestion}%
   }\par%
   \vspace{-0.7em}%
   \homework@headerbar%
@@ -173,7 +428,7 @@
   \ifnum\value{subquestion}>0\newpage\fi%
   \refstepcounter{subquestion}%
   \phantomsection%
-  \addcontentsline{toc}{subsection}{(\thesubquestion)}%
+  \homework@addsubquestiontoc%
   \begingroup%
   \global\advance\homework@subquestiondepth by 1%
   \showsubquestiontitletrue%
@@ -187,11 +442,19 @@
   \fi%
   \ifsubquestionpages%
     \global\homework@questionheaderpendingfalse%
-    \global\homework@subquestionheaderpendingtrue%
+    \ifnum\value{subquestion}=1 %
+      \ifhomework@questioncontextheader%
+        \global\homework@subquestionheaderpendingfalse%
+      \else%
+        \global\homework@subquestionheaderpendingtrue%
+      \fi%
+    \else%
+      \global\homework@subquestionheaderpendingtrue%
+    \fi%
   \else\ifshowsubquestiontitle%
       \cindent\textbf{(\thesubquestion)}\hspace{0.5em}%
     \fi\fi%
-  \label{Q:\thesubquestion}%
+  \label{Q:\homework@subquestionlabelnumber}%
 }
 
 \newcommand{\homework@beginsubsubquestion}[1]{%
@@ -207,7 +470,7 @@
   \fi%
   \refstepcounter{subsubquestion}%
   \phantomsection%
-  \addcontentsline{toc}{subsubsection}{(\thesubsubquestion)}%
+  \homework@addsubsubquestiontoc%
   \begingroup%
   \global\advance\homework@subquestiondepth by 1%
   \homework@subsubquestionactivetrue%
@@ -226,7 +489,7 @@
   \else\ifshowsubquestiontitle%
       \par\noindent\hspace*{-0.5em}\textbf{(\thesubsubquestion)}\hspace{0.5em}%
     \fi\fi%
-  \label{Q:\thesubsubquestion}%
+  \label{Q:\homework@subsubquestionlabelnumber}%
 }
 
 \newcommand{\homework@endsubquestion}{%
@@ -250,6 +513,28 @@
 }{%
   \homework@endsubquestion%
 }
+
+\NewDocumentEnvironment{questioncontext}{O{For the whole question} +b}{%
+  \homework@flushpendingpageheader%
+  \global\homework@questioncontextheadertrue%
+  \par\smallskip\noindent%
+  \begingroup%
+  \setlength{\fboxsep}{0.65em}%
+  \setlength{\fboxrule}{0.4pt}%
+  \fcolorbox{black!25}{black!3}{%
+    \begin{minipage}{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}%
+      \setlength{\parskip}{0pt}%
+      \setlength{\abovedisplayskip}{0.35em plus 0.1em minus 0.1em}%
+      \setlength{\belowdisplayskip}{0.35em plus 0.1em minus 0.1em}%
+      \setlength{\abovedisplayshortskip}{0.15em plus 0.1em minus 0.1em}%
+      \setlength{\belowdisplayshortskip}{0.25em plus 0.1em minus 0.1em}%
+      \textbf{#1.}\par%
+      #2%
+    \end{minipage}%
+  }%
+  \par\smallskip%
+  \endgroup%
+}{}
 \makeatother
 
 % this is for better grouping and layout

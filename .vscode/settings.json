@@ -39,6 +39,7 @@
         "**/.aux": true
     },
     "latex-workshop.formatting.latex": "latexindent",
+    "latex-workshop.formatting.latexindent.path": "/Users/jamal/Documents/Education/technion-notes/.vscode/latexindent-wrapper.sh",
     "editor.formatOnSave": true,
     "latex-workshop.latex.outDir": "./.aux"
 }

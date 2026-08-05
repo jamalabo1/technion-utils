@@ -2,8 +2,68 @@
 \ProvidesPackage{helpers/homework-theorems}[Homework theorem and proof helpers]
 
 \RequirePackage{helpers/homework-cosmetic}
+\RequirePackage{xparse}
 
 \makeatletter
+\newif\ifhomework@showtheoremnumbers
+\newif\ifhomework@showtheoremcontext
+\homework@showtheoremnumberstrue
+\homework@showtheoremcontexttrue
+\DeclareOption{notheoremnumbers}{\homework@showtheoremnumbersfalse}
+\DeclareOption{notheoremnumbering}{\homework@showtheoremnumbersfalse}
+\DeclareOption{disabletheoremnumbering}{\homework@showtheoremnumbersfalse}
+\DeclareOption{localtheoremnumbers}{%
+  \homework@showtheoremnumberstrue%
+  \homework@showtheoremcontextfalse%
+}
+\DeclareOption{localtheoremnumbering}{%
+  \homework@showtheoremnumberstrue%
+  \homework@showtheoremcontextfalse%
+}
+\DeclareOption{partialtheoremnumbers}{%
+  \homework@showtheoremnumberstrue%
+  \homework@showtheoremcontextfalse%
+}
+\DeclareOption{partialtheoremnumbering}{%
+  \homework@showtheoremnumberstrue%
+  \homework@showtheoremcontextfalse%
+}
+\ProcessOptions\relax
+
+\newcommand{\disabletheoremnumbers}{\homework@showtheoremnumbersfalse}
+\newcommand{\homework@disabletheoremnumbering}{\homework@showtheoremnumbersfalse}
+\let\disabletheoremnumbering\homework@disabletheoremnumbering
+\newcommand{\enabletheoremnumbers}{%
+  \homework@showtheoremnumberstrue%
+  \homework@showtheoremcontexttrue%
+  \let\disabletheoremnumbering\homework@disabletheoremnumbering%
+}
+\newcommand{\enabletheoremnumbering}{%
+  \homework@showtheoremnumberstrue%
+  \homework@showtheoremcontexttrue%
+  \let\disabletheoremnumbering\homework@disabletheoremnumbering%
+}
+\newcommand{\enablelocaltheoremnumbers}{%
+  \homework@showtheoremnumberstrue%
+  \homework@showtheoremcontextfalse%
+  \let\disabletheoremnumbering\homework@disabletheoremnumbering%
+}
+\newcommand{\enablelocaltheoremnumbering}{%
+  \homework@showtheoremnumberstrue%
+  \homework@showtheoremcontextfalse%
+  \let\disabletheoremnumbering\homework@disabletheoremnumbering%
+}
+\let\enablepartialtheoremnumbers\enablelocaltheoremnumbers
+\let\enablepartialtheoremnumbering\enablelocaltheoremnumbering
+
+\newcommand{\homework@theoremnumber}[1]{%
+  \ifhomework@showtheoremnumbers%
+    \ifx\disabletheoremnumbering\homework@disabletheoremnumbering%
+      ~\ifhomework@showtheoremcontext\currentcontext.\fi\csname the#1\endcsname%
+    \fi%
+  \fi%
+}
+
 \newcommand{\newtheoremenv}[3][\bfseries]{%
   % #1 = formatting (optional, default \bfseries)
   % #2 = environment name
@@ -14,9 +74,7 @@
   \newenvironment{#2}{%
     \homework@flushpendingpageheader%
     \refstepcounter{#2}%
-    % Allows disabling the numbering and context by defining \disabletheoremnumbering
-    \cindent[1]{#1#3%
-      \ifdefined\disabletheoremnumbering~\csname the#2\endcsname\else~\currentcontext.\csname the#2\endcsname\fi\quad}%
+    \cindent[1]{#1#3\homework@theoremnumber{#2}\quad}%
     \edef\@currentlabel{\currentcontext.\arabic{#2}}%
     \label{\currentcontext:#2:\arabic{#2}}%
   }{%
@@ -73,29 +131,195 @@
 \newif\ifinductionenv
 \inductionenvfalse
 
-\newenvironment{induction}[1]{%
-  \inductionenvtrue%
-  \begin{list}{}{
-      \leftmargin=1.5em\rightmargin=0em
-      proof by induction on {#1}.
-    }%
-    \item\relax%
-          }{%
-  \end{list}%
-  \inductionenvfalse%
-}
+\ExplSyntaxOn
+\tl_new:N \g_homework_induction_defaults_tl
+\tl_new:N \g_homework_sinduction_defaults_tl
+\tl_new:N \l_homework_induction_proof_name_tl
+\tl_new:N \l_homework_induction_connector_tl
+\tl_new:N \l_homework_induction_method_tl
+\tl_new:N \l_homework_induction_subject_prefix_tl
+\tl_new:N \l_homework_induction_punctuation_tl
+\tl_new:N \l_homework_induction_sentence_format_tl
+\tl_new:N \l_homework_induction_proof_format_tl
+\tl_new:N \l_homework_induction_connector_format_tl
+\tl_new:N \l_homework_induction_method_format_tl
+\tl_new:N \l_homework_induction_subject_format_tl
+\tl_new:N \l_homework_induction_heading_tl
+\tl_new:N \l_homework_induction_left_margin_tl
+\tl_new:N \l_homework_induction_right_margin_tl
 
-\newenvironment{sinduction}[1]{%
-  \inductionenvtrue%
-  \begin{list}{}{
-      \leftmargin=1.5em\rightmargin=0em
-      proof by strong induction on {#1}.
+\tl_gset:Nn \g_homework_induction_defaults_tl
+  {
+    proof-name = proof,
+    connector = by,
+    method = induction,
+    subject-prefix = on,
+    punctuation = {.},
+    sentence-format = {},
+    proof-format = {},
+    connector-format = {},
+    method-format = {},
+    subject-format = {},
+    heading = {},
+    left-margin = 1.5em,
+    right-margin = 0em,
+  }
+
+\tl_gset:Nn \g_homework_sinduction_defaults_tl
+  {
+    proof-name = proof,
+    connector = by,
+    method = {strong \space induction},
+    subject-prefix = on,
+    punctuation = {.},
+    sentence-format = {},
+    proof-format = {},
+    connector-format = {},
+    method-format = {},
+    subject-format = {},
+    heading = {},
+    left-margin = 1.5em,
+    right-margin = 0em,
+  }
+
+\keys_define:nn { homework / induction }
+  {
+    proof-name .tl_set:N = \l_homework_induction_proof_name_tl,
+    proof-word .tl_set:N = \l_homework_induction_proof_name_tl,
+    proof .tl_set:N = \l_homework_induction_proof_name_tl,
+    connector .tl_set:N = \l_homework_induction_connector_tl,
+    method .tl_set:N = \l_homework_induction_method_tl,
+    subject-prefix .tl_set:N = \l_homework_induction_subject_prefix_tl,
+    preposition .tl_set:N = \l_homework_induction_subject_prefix_tl,
+    punctuation .tl_set:N = \l_homework_induction_punctuation_tl,
+    sentence-format .tl_set:N = \l_homework_induction_sentence_format_tl,
+    heading-format .tl_set:N = \l_homework_induction_sentence_format_tl,
+    format .tl_set:N = \l_homework_induction_sentence_format_tl,
+    proof-format .tl_set:N = \l_homework_induction_proof_format_tl,
+    connector-format .tl_set:N = \l_homework_induction_connector_format_tl,
+    method-format .tl_set:N = \l_homework_induction_method_format_tl,
+    subject-format .tl_set:N = \l_homework_induction_subject_format_tl,
+    heading .tl_set:N = \l_homework_induction_heading_tl,
+    text .tl_set:N = \l_homework_induction_heading_tl,
+    left-margin .tl_set:N = \l_homework_induction_left_margin_tl,
+    right-margin .tl_set:N = \l_homework_induction_right_margin_tl,
+    capital .code:n =
+      { \tl_set:Nn \l_homework_induction_proof_name_tl { Proof } },
+    capitalize .code:n =
+      { \tl_set:Nn \l_homework_induction_proof_name_tl { Proof } },
+    lowercase .code:n =
+      { \tl_set:Nn \l_homework_induction_proof_name_tl { proof } },
+    bold .code:n =
+      { \tl_set:Nn \l_homework_induction_sentence_format_tl { \bfseries } },
+    italic .code:n =
+      { \tl_set:Nn \l_homework_induction_sentence_format_tl { \itshape } },
+    .unknown .code:n =
+      {
+        \PackageError { homework }
+          { Unknown~induction~option~`\l_keys_key_str' }
+          { Use~key=value~options~such~as~proof-name=Proof~or~sentence-format=\string\bfseries. }
+      },
+  }
+
+\NewDocumentCommand { \inductionenvsetup } { m }
+  {
+    \tl_gput_right:Nn \g_homework_induction_defaults_tl { , #1 }
+    \tl_gput_right:Nn \g_homework_sinduction_defaults_tl { , #1 }
+  }
+
+\NewDocumentCommand { \inductionsetup } { m }
+  { \tl_gput_right:Nn \g_homework_induction_defaults_tl { , #1 } }
+
+\NewDocumentCommand { \sinductionsetup } { m }
+  { \tl_gput_right:Nn \g_homework_sinduction_defaults_tl { , #1 } }
+
+\cs_new_protected:Npn \homework_induction_apply_defaults:Nn #1#2
+  {
+    \exp_args:NnV \keys_set:nn { homework / induction } #1
+    \keys_set:nn { homework / induction } { #2 }
+  }
+
+\cs_new_protected:Npn \homework_induction_print_formatted:NN #1#2
+  { { \tl_use:N #1 \tl_use:N #2 } }
+
+\cs_new_protected:Npn \homework_induction_print_subject:n #1
+  {
+    \tl_if_blank:VF \l_homework_induction_subject_prefix_tl
+      {
+        \space
+        \homework_induction_print_formatted:NN
+          \l_homework_induction_subject_format_tl
+          \l_homework_induction_subject_prefix_tl
+      }
+    \space
+    { \tl_use:N \l_homework_induction_subject_format_tl #1 }
+  }
+
+\cs_new_protected:Npn \homework_induction_print_heading:n #1
+  {
+    \tl_if_blank:VTF \l_homework_induction_heading_tl
+      {
+        {
+          \tl_use:N \l_homework_induction_sentence_format_tl
+            \homework_induction_print_formatted:NN
+              \l_homework_induction_proof_format_tl
+              \l_homework_induction_proof_name_tl
+            \space
+            \homework_induction_print_formatted:NN
+              \l_homework_induction_connector_format_tl
+              \l_homework_induction_connector_tl
+            \space
+            \homework_induction_print_formatted:NN
+              \l_homework_induction_method_format_tl
+              \l_homework_induction_method_tl
+            \homework_induction_print_subject:n { #1 }
+            \tl_use:N \l_homework_induction_punctuation_tl
+        }
+      }
+      {
+        {
+          \tl_use:N \l_homework_induction_sentence_format_tl
+          \tl_use:N \l_homework_induction_heading_tl
+        }
+      }
+  }
+
+\cs_new_protected:Npn \homework_induction_begin:Nnn #1#2#3
+  {
+    \inductionenvtrue
+    \homework_induction_apply_defaults:Nn #1 { #2 }
+    \begin{list}{}{%
+      \setlength{\leftmargin}{\tl_use:N \l_homework_induction_left_margin_tl}%
+      \setlength{\rightmargin}{\tl_use:N \l_homework_induction_right_margin_tl}%
     }%
-    \item\relax%
-          }{%
-  \end{list}%
-  \inductionenvfalse%
-}
+    \item\relax
+    \homework_induction_print_heading:n { #3 }\par\ignorespaces
+  }
+
+\cs_new_protected:Npn \homework_induction_end:
+  {
+    \end{list}
+    \inductionenvfalse
+  }
+
+\NewDocumentEnvironment { induction } { O{} m }
+  {
+    \homework_induction_begin:Nnn
+      \g_homework_induction_defaults_tl
+      { #1 }
+      { #2 }
+  }
+  { \homework_induction_end: }
+
+\NewDocumentEnvironment { sinduction } { O{} m }
+  {
+    \homework_induction_begin:Nnn
+      \g_homework_sinduction_defaults_tl
+      { #1 }
+      { #2 }
+  }
+  { \homework_induction_end: }
+\ExplSyntaxOff
 
 \newenvironment{base}{%
   \ifinductionenv\else%
